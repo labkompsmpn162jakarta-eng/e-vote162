@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for Live Scores -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SUPABASE JS SDK CDN (TAMBAHKAN DI SINI) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
@@ -1087,6 +1089,22 @@
         window.onload = function() {
             app = new EvotingApp();
         };
+        <!-- Bagian paling bawah index.html -->
+        // --- 1. INISIALISASI SUPABASE DI SINI ---
+        const SUPABASE_URL = "https://PROJECT_ID_ANDA.supabase.co"; // Gantilah dengan Project URL Supabase Anda
+        const SUPABASE_ANON_KEY = "KEY_ANON_PUBLIC_ANDA"; // Gantilah dengan key anon public Supabase Anda
+
+        // Inisialisasi client Supabase
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- 2. KODE LAMA ANDA ---
+        const API_URL = "https://script.google.com/macros/s/.../exec";
+        const CANDIDATES_OSIS = [ ... ];
+        
+        // ... kode class EvotingApp dan sisanya ...
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
