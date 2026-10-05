@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for Live Scores -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SUPABASE JS SDK CDN -->
+    <!-- SUPABASE JS SDK CDN (TAMBAHKAN DI SINI) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -521,11 +521,6 @@
     </footer>
 
     <script>
-      // Inisialisasi Supabase
-      const SUPABASE_URL = "https://hfezgcqreylagsinddmp.supabase.co";
-      const SUPABASE_ANON_KEY = "sb_publishable_J6bGT3E8DjfW1VAEGxDYCQ_8W5o04pR";
-      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
       const CANDIDATES_OSIS = [
         {
           id: "osis_1",
@@ -770,38 +765,42 @@
           if (!grid) return;
           grid.innerHTML = CANDIDATES_OSIS.map(
             (c) => `
-                <div class="candidate-card clay-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all border border-slate-200">
-                    <div>
-                        <div class="relative h-48 bg-slate-100 overflow-hidden">
-                            <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=OSIS+${c.number}'">
-                            <div class="absolute top-4 left-4 bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-sm shadow-md">
-                                PASLON OSIS #${c.number}
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-lg font-extrabold text-slate-900 leading-snug">${c.name}</h3>
-                            <p class="text-xs font-semibold text-brand-600 mt-1 mb-3 italic">"${c.tagline}"</p>
-                            <div class="space-y-3 text-xs">
-                                <div>
-                                    <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Visi Utama</span>
-                                    <p class="text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 leading-relaxed">${c.vision}</p>
-                                </div>
-                                <div>
-                                    <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Misi</span>
-                                    <ul class="space-y-1 text-slate-600 pl-4 list-disc">
-                                        ${c.mission.map((m) => `<li>${m}</li>`).join("")}
-                                    </ul>
+                    <div class="candidate-card clay-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all border border-slate-200">
+                        <div>
+                            <div class="relative h-48 bg-slate-100 overflow-hidden">
+                                <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=OSIS+${
+              c.number
+            }'">
+                                <div class="absolute top-4 left-4 bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-sm shadow-md">
+                                    PASLON OSIS #${c.number}
                                 </div>
                             </div>
+                            <div class="p-6">
+                                <h3 class="text-lg font-extrabold text-slate-900 leading-snug">${c.name}</h3>
+                                <p class="text-xs font-semibold text-brand-600 mt-1 mb-3 italic">"${c.tagline}"</p>
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Visi Utama</span>
+                                        <p class="text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 leading-relaxed">${c.vision}</p>
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Misi</span>
+                                        <ul class="space-y-1 text-slate-600 pl-4 list-disc">
+                                            ${c.mission.map((m) => `<li>${m}</li>`).join("")}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 pt-0">
+                            <button onclick="app.openConfirmModal('osis', '${c.id}', '${
+              c.name
+            }')" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
+                                <i class="fa-solid fa-square-check"></i> Pilih Paslon OSIS #${c.number}
+                            </button>
                         </div>
                     </div>
-                    <div class="p-6 pt-0">
-                        <button onclick="app.openConfirmModal('osis', '${c.id}', '${c.name}')" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
-                            <i class="fa-solid fa-square-check"></i> Pilih Paslon OSIS #${c.number}
-                        </button>
-                    </div>
-                </div>
-            `
+                `
           ).join("");
         }
 
@@ -810,38 +809,42 @@
           if (!grid) return;
           grid.innerHTML = CANDIDATES_MPK.map(
             (c) => `
-                <div class="candidate-card clay-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all border border-slate-200">
-                    <div>
-                        <div class="relative h-48 bg-slate-100 overflow-hidden">
-                            <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=MPK+${c.number}'">
-                            <div class="absolute top-4 left-4 bg-blue-700 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-sm shadow-md">
-                                PASLON MPK #${c.number}
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-lg font-extrabold text-slate-900 leading-snug">${c.name}</h3>
-                            <p class="text-xs font-semibold text-blue-600 mt-1 mb-3 italic">"${c.tagline}"</p>
-                            <div class="space-y-3 text-xs">
-                                <div>
-                                    <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Visi Utama</span>
-                                    <p class="text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 leading-relaxed">${c.vision}</p>
-                                </div>
-                                <div>
-                                    <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Misi</span>
-                                    <ul class="space-y-1 text-slate-600 pl-4 list-disc">
-                                        ${c.mission.map((m) => `<li>${m}</li>`).join("")}
-                                    </ul>
+                    <div class="candidate-card clay-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all border border-slate-200">
+                        <div>
+                            <div class="relative h-48 bg-slate-100 overflow-hidden">
+                                <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=MPK+${
+              c.number
+            }'">
+                                <div class="absolute top-4 left-4 bg-blue-700 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-sm shadow-md">
+                                    PASLON MPK #${c.number}
                                 </div>
                             </div>
+                            <div class="p-6">
+                                <h3 class="text-lg font-extrabold text-slate-900 leading-snug">${c.name}</h3>
+                                <p class="text-xs font-semibold text-blue-600 mt-1 mb-3 italic">"${c.tagline}"</p>
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Visi Utama</span>
+                                        <p class="text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 leading-relaxed">${c.vision}</p>
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Misi</span>
+                                        <ul class="space-y-1 text-slate-600 pl-4 list-disc">
+                                            ${c.mission.map((m) => `<li>${m}</li>`).join("")}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 pt-0">
+                            <button onclick="app.openConfirmModal('mpk', '${c.id}', '${
+              c.name
+            }')" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
+                                <i class="fa-solid fa-square-check"></i> Pilih Paslon MPK #${c.number}
+                            </button>
                         </div>
                     </div>
-                    <div class="p-6 pt-0">
-                        <button onclick="app.openConfirmModal('mpk', '${c.id}', '${c.name}')" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
-                            <i class="fa-solid fa-square-check"></i> Pilih Paslon MPK #${c.number}
-                        </button>
-                    </div>
-                </div>
-            `
+                `
           ).join("");
         }
 
@@ -857,7 +860,7 @@
           this.selectedCandidate = null;
         }
 
-        async confirmVote() {
+        confirmVote() {
           if (!this.selectedCandidate || !this.currentUser) return;
           const userKey = `${this.currentUser.nama}_${this.currentUser.kelas}`;
           const { type, id } = this.selectedCandidate;
@@ -875,34 +878,14 @@
             localStorage.setItem("osis_votes_mpk", JSON.stringify(this.votesMpk));
             localStorage.setItem(`voted_mpk_${userKey}`, "true");
 
-            const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB";
             const voterRecord = {
               userKey,
               nama: this.currentUser.nama,
               kelas: this.currentUser.kelas,
-              time: timeNow,
+              time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB",
             };
             this.votedUsers.push(voterRecord);
             localStorage.setItem("osis_voted_users", JSON.stringify(this.votedUsers));
-
-            // Simpan otomatis ke database Supabase tabel voters
-            try {
-              const { error } = await supabaseClient
-                .from('voters')
-                .insert([
-                  {
-                    user_key: userKey,
-                    nama: this.currentUser.nama,
-                    kelas: this.currentUser.kelas,
-                    voted_at: new Date().toISOString()
-                  }
-                ]);
-              if (error) {
-                console.error("Gagal sinkronisasi Supabase:", error);
-              }
-            } catch (err) {
-              console.error("Error koneksi Supabase:", err);
-            }
 
             this.closeModal();
             this.showVotedNotice();
@@ -914,17 +897,19 @@
           const viewVoting = document.getElementById("view-voting");
           if (!viewVoting) return;
           viewVoting.innerHTML = `
-                <div class="clay-card rounded-2xl p-10 text-center max-w-xl mx-auto mt-6">
-                    <div class="inline-flex p-4 bg-emerald-50 text-emerald-600 rounded-2xl mb-4 text-4xl shadow-inner">
-                        <i class="fa-solid fa-circle-check"></i>
+                    <div class="clay-card rounded-2xl p-10 text-center max-w-xl mx-auto mt-6">
+                        <div class="inline-flex p-4 bg-emerald-50 text-emerald-600 rounded-2xl mb-4 text-4xl shadow-inner">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-slate-900">Terima Kasih Telah Memilih!</h2>
+                        <p class="text-slate-500 text-sm mt-2">Suara atas nama <span class="font-bold text-slate-800">${this.currentUser ? this.currentUser.nama : "Pemilih"} (${
+            this.currentUser ? this.currentUser.kelas : ""
+          })</span> telah tercatat dengan aman untuk Pemilu OSIS & MPK SMPN 162 Jakarta.</p>
+                        <div class="mt-6">
+                            <button onclick="app.logout()" class="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-xs shadow-md">Keluar Sesi</button>
+                        </div>
                     </div>
-                    <h2 class="text-3xl font-extrabold text-slate-900">Terima Kasih Telah Memilih!</h2>
-                    <p class="text-slate-500 text-sm mt-2">Suara atas nama <span class="font-bold text-slate-800">${this.currentUser ? this.currentUser.nama : "Pemilih"} (${this.currentUser ? this.currentUser.kelas : ""})</span> telah tercatat dengan aman untuk Pemilu OSIS & MPK SMPN 162 Jakarta.</p>
-                    <div class="mt-6">
-                        <button onclick="app.logout()" class="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-xs shadow-md">Keluar Sesi</button>
-                    </div>
-                </div>
-            `;
+                `;
           router.navigate("voting");
         }
 
@@ -1121,18 +1106,22 @@
           tbody.innerHTML = filtered
             .map(
               (v, index) => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-3 text-slate-500 font-bold">${index + 1}</td>
-                    <td class="p-3 font-semibold text-slate-800">${v.nama}</td>
-                    <td class="p-3"><span class="px-2.5 py-1 ${v.kelas && v.kelas.startsWith("GURU") ? "bg-amber-50 text-amber-700" : "bg-purple-50 text-purple-700"} font-bold rounded-lg">${v.kelas || "-"}</span></td>
-                    <td class="p-3 text-slate-500">${v.time || "-"}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="app.deleteVoter(${v.index})" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-all border border-red-200" title="Hapus Data Pemilih">
-                            <i class="fa-solid fa-trash-can"></i> Hapus
-                        </button>
-                    </td>
-                </tr>
-            `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-3 text-slate-500 font-bold">${index + 1}</td>
+                        <td class="p-3 font-semibold text-slate-800">${v.nama}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 ${v.kelas && v.kelas.startsWith("GURU") ? "bg-amber-50 text-amber-700" : "bg-purple-50 text-purple-700"} font-bold rounded-lg">${
+                v.kelas || "-"
+              }</span></td>
+                        <td class="p-3 text-slate-500">${v.time || "-"}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="app.deleteVoter(${
+                              v.index
+                            })" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-all border border-red-200" title="Hapus Data Pemilih">
+                                <i class="fa-solid fa-trash-can"></i> Hapus
+                            </button>
+                        </td>
+                    </tr>
+                `
             )
             .join("");
         }
@@ -1205,6 +1194,16 @@
       window.onload = function () {
         app = new EvotingApp();
       };
+
+      // --- 1. INISIALISASI SUPABASE DI SINI ---
+      const SUPABASE_URL = "https://hfezgcqreylagsinddmp.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_J6bGT3E8DjfW1VAEGxDYCQ_8W5o04pR";
+
+      // Inisialisasi client Supabase
+      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // --- 2. KODE KONEKSI API ---
+      const API_URL = "https://script.google.com/macros/s/.../exec";
     </script>
   </body>
 </html>
