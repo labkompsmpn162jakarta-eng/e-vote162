@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>E-Voting OSIS & MPK SMPN 162 Jakarta 2026/2027</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,684 +11,766 @@
     <!-- SUPABASE JS SDK CDN (TAMBAHKAN DI SINI) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            850: '#111827',
-                            900: '#0f172a'
-                        }
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#f0fdf4",
+                100: "#dcfce7",
+                500: "#22c55e",
+                600: "#16a34a",
+                700: "#15803d",
+                850: "#111827",
+                900: "#0f172a",
+              },
+            },
+          },
+        },
+      };
     </script>
     <style>
-        .clay-card {
-            background: #ffffff;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-        }
-        .candidate-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 30px -10px rgba(22, 163, 74, 0.15);
-        }
+      .clay-card {
+        background: #ffffff;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+      }
+      .candidate-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 30px -10px rgba(22, 163, 74, 0.15);
+      }
     </style>
-</head>
-<body class="h-full bg-slate-50 text-slate-800 font-sans flex flex-col justify-between selection:bg-brand-500 selection:text-white">
-
+  </head>
+  <body class="h-full bg-slate-50 text-slate-800 font-sans flex flex-col justify-between selection:bg-brand-500 selection:text-white">
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('home')">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden bg-white shadow-md shadow-brand-500/10 border border-slate-100 p-1">
-                    <img src="./image/onsit.jpeg" alt="Logo SMPN 162 Jakarta" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <h1 class="font-bold text-base sm:text-lg text-slate-900 tracking-tight leading-tight">SMPN 162 JAKARTA</h1>
-                    <p class="text-xs text-brand-700 font-semibold">E-Voting Pilketos & Pilkempk 2026</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-3">
-                <button onclick="router.navigate('admin-login')" class="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-600 hover:text-brand-600 bg-slate-100 hover:bg-emerald-50 rounded-lg transition-all flex items-center gap-2 border border-slate-200">
-                    <i class="fa-solid fa-lock text-brand-600"></i> Portal Guru & Admin
-                </button>
-                <div id="nav-user-badge" class="hidden items-center gap-2 bg-brand-50 border border-brand-200 px-3 py-1.5 rounded-lg">
-                    <i class="fa-solid fa-user-check text-brand-600 text-sm"></i>
-                    <span id="nav-user-display" class="text-xs font-bold text-brand-800"></span>
-                    <button onclick="app.logout()" class="ml-2 text-red-500 hover:text-red-700 text-xs font-bold" title="Keluar">
-                        <i class="fa-solid fa-power-off"></i>
-                    </button>
-                </div>
-            </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('home')">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden bg-white shadow-md shadow-brand-500/10 border border-slate-100 p-1">
+            <img src="./image/onsit.jpeg" alt="Logo SMPN 162 Jakarta" class="w-full h-full object-contain" />
+          </div>
+          <div>
+            <h1 class="font-bold text-base sm:text-lg text-slate-900 tracking-tight leading-tight">SMPN 162 JAKARTA</h1>
+            <p class="text-xs text-brand-700 font-semibold">E-Voting Pilketos & Pilkempk 2026</p>
+          </div>
         </div>
+        <div class="flex items-center space-x-3">
+          <button
+            onclick="router.navigate('admin-login')"
+            class="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-600 hover:text-brand-600 bg-slate-100 hover:bg-emerald-50 rounded-lg transition-all flex items-center gap-2 border border-slate-200"
+          >
+            <i class="fa-solid fa-lock text-brand-600"></i> Portal Guru & Admin
+          </button>
+          <div id="nav-user-badge" class="hidden items-center gap-2 bg-brand-50 border border-brand-200 px-3 py-1.5 rounded-lg">
+            <i class="fa-solid fa-user-check text-brand-600 text-sm"></i>
+            <span id="nav-user-display" class="text-xs font-bold text-brand-800"></span>
+            <button onclick="app.logout()" class="ml-2 text-red-500 hover:text-red-700 text-xs font-bold" title="Keluar">
+              <i class="fa-solid fa-power-off"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </nav>
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- VIEW 1: HOME / LANDING & LOGIN -->
+      <section id="view-home" class="view-section max-w-2xl mx-auto mt-6">
+        <div class="clay-card rounded-2xl p-8 sm:p-10 text-center relative overflow-hidden">
+          <div class="absolute -top-12 -right-12 w-40 h-40 bg-brand-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+          <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
 
-        <!-- VIEW 1: HOME / LANDING & LOGIN -->
-        <section id="view-home" class="view-section max-w-2xl mx-auto mt-6">
-            <div class="clay-card rounded-2xl p-8 sm:p-10 text-center relative overflow-hidden">
-                <div class="absolute -top-12 -right-12 w-40 h-40 bg-brand-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
-                <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
-                
-                <div class="relative z-10">
-                    <div class="inline-flex items-center justify-center p-3 bg-brand-50 rounded-2xl mb-4 shadow-inner w-20 h-20 border border-brand-100">
-                        <img src="./image/onsit.jpeg" alt="Logo SMPN 162 Jakarta" class="w-full h-full object-contain drop-shadow-sm">
-                    </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Pemilihan Raya OSIS & MPK</h2>
-                    <p class="text-emerald-700 font-semibold text-xs sm:text-sm mb-6">SMP Negeri 162 Jakarta Tahun Ajaran 2026/2027</p>
-                    
-                    <!-- Role Switcher Tabs -->
-                    <div class="flex bg-slate-100 p-1.5 rounded-xl max-w-xs mx-auto mb-6 border border-slate-200">
-                        <button type="button" id="tab-btn-siswa" onclick="app.switchLoginRole('siswa')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white text-brand-700 shadow-xs">Login Siswa</button>
-                        <button type="button" id="tab-btn-guru" onclick="app.switchLoginRole('guru')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">Login Guru</button>
-                    </div>
-
-                    <p id="login-desc" class="text-slate-500 text-xs sm:text-sm mb-6 max-w-md mx-auto">Silakan masukkan Nama Lengkap dan Kelas Anda untuk mulai memberikan suara.</p>
-                    
-                    <!-- Form Login Siswa -->
-                    <form id="form-login-siswa" onsubmit="app.handleLogin(event, 'siswa')" class="space-y-4 max-w-md mx-auto text-left">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nama Lengkap Siswa</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                                    <i class="fa-solid fa-user"></i>
-                                </span>
-                                <input type="text" id="input-nama-siswa" required placeholder="Contoh: Naura" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Kelas</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                                    <i class="fa-solid fa-chalkboard"></i>
-                                </span>
-                                <select id="input-kelas-siswa" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium text-sm transition-all">
-                                    <option value="" disabled selected>Pilih Kelas Anda</option>
-                                    <optgroup label="Kelas 7">
-                                        <option value="7A">Kelas 7A</option><option value="7B">Kelas 7B</option><option value="7C">Kelas 7C</option><option value="7D">Kelas 7D</option><option value="7E">Kelas 7E</option><option value="7F">Kelas 7F</option><option value="7G">Kelas 7G</option><option value="7H">Kelas 7H</option>
-                                    </optgroup>
-                                    <optgroup label="Kelas 8">
-                                        <option value="8A">Kelas 8A</option><option value="8B">Kelas 8B</option><option value="8C">Kelas 8C</option><option value="8D">Kelas 8D</option><option value="8E">Kelas 8E</option><option value="8F">Kelas 8F</option><option value="8G">Kelas 8G</option><option value="8H">Kelas 8H</option>
-                                    </optgroup>
-                                    <optgroup label="Kelas 9">
-                                        <option value="9A">Kelas 9A</option><option value="9B">Kelas 9B</option><option value="9C">Kelas 9C</option><option value="9D">Kelas 9D</option><option value="9E">Kelas 9E</option><option value="9F">Kelas 9F</option><option value="9G">Kelas 9G</option><option value="9H">Kelas 9H</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full py-3.5 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2 text-sm mt-2">
-                            <span>Masuk & Mulai Memilih (Siswa)</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </form>
-
-                    <!-- Form Login Guru -->
-                    <form id="form-login-guru" onsubmit="app.handleLogin(event, 'guru')" class="space-y-4 max-w-md mx-auto text-left hidden">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nama Lengkap & Gelar Guru</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                                    <i class="fa-solid fa-chalkboard-user"></i>
-                                </span>
-                                <input type="text" id="input-nama-guru" required placeholder="Contoh: Drs. Budi Santoso, M.Pd." class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">NIP / Kode Guru</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                                    <i class="fa-solid id-card"></i>
-                                </span>
-                                <input type="text" id="input-nip-guru" required placeholder="Contoh: 198001012005011001" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all">
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full py-3.5 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2 text-sm mt-2">
-                            <span>Masuk & Mulai Memilih (Guru)</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </form>
-                    
-                    <div class="mt-8 pt-6 border-t border-slate-100 text-xs text-slate-400 flex items-center justify-center gap-4">
-                        <span class="flex items-center gap-1"><i class="fa-solid fa-lock text-brand-600"></i> Transparan</span>
-                        <span class="flex items-center gap-1"><i class="fa-solid fa-user-shield text-brand-600"></i> 1 Pemilih 1 Hak Suara</span>
-                    </div>
-                </div>
+          <div class="relative z-10">
+            <div class="inline-flex items-center justify-center p-3 bg-brand-50 rounded-2xl mb-4 shadow-inner w-20 h-20 border border-brand-100">
+              <img src="./image/onsit.jpeg" alt="Logo SMPN 162 Jakarta" class="w-full h-full object-contain drop-shadow-sm" />
             </div>
-        </section>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Pemilihan Raya OSIS & MPK</h2>
+            <p class="text-emerald-700 font-semibold text-xs sm:text-sm mb-6">SMP Negeri 162 Jakarta Tahun Ajaran 2026/2027</p>
 
-        <!-- VIEW 2: VOTING DASHBOARD (3 Paslon OSIS & 2 Paslon MPK) -->
-        <section id="view-voting" class="view-section hidden space-y-12">
-            <!-- Bagian 1: Pemilihan OSIS -->
-            <div id="step-osis-container">
-                <div class="text-center max-w-3xl mx-auto mb-8">
-                    <span class="px-3.5 py-1.5 bg-brand-100 text-brand-800 text-xs font-bold rounded-full uppercase tracking-wider mb-3 inline-block">Tahap 1 dari 2</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-1">Pemilihan Calon Ketua & Wakil Ketua OSIS</h2>
-                    <p class="text-slate-500 text-sm sm:text-base mt-2">Pilih salah satu dari 3 pasangan calon pengurus OSIS SMPN 162 Jakarta periode mendatang.</p>
-                </div>
-                <div id="candidates-osis-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Injected via JS -->
-                </div>
+            <!-- Role Switcher Tabs -->
+            <div class="flex bg-slate-100 p-1.5 rounded-xl max-w-xs mx-auto mb-6 border border-slate-200">
+              <button type="button" id="tab-btn-siswa" onclick="app.switchLoginRole('siswa')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white text-brand-700 shadow-xs">
+                Login Siswa
+              </button>
+              <button type="button" id="tab-btn-guru" onclick="app.switchLoginRole('guru')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">
+                Login Guru
+              </button>
             </div>
 
-            <!-- Bagian 2: Pemilihan MPK -->
-            <div id="step-mpk-container" class="hidden pt-8 border-t border-slate-200">
-                <div class="text-center max-w-3xl mx-auto mb-8">
-                    <span class="px-3.5 py-1.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full uppercase tracking-wider mb-3 inline-block">Tahap 2 dari 2</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-1">Pemilihan Calon Pengurus MPK</h2>
-                    <p class="text-slate-500 text-sm sm:text-base mt-2">Pilih salah satu dari 2 pasangan calon pengurus Majelis Perwakilan Kelas (MPK).</p>
+            <p id="login-desc" class="text-slate-500 text-xs sm:text-sm mb-6 max-w-md mx-auto">Silakan masukkan Nama Lengkap dan Kelas Anda untuk mulai memberikan suara.</p>
+
+            <!-- Form Login Siswa -->
+            <form id="form-login-siswa" onsubmit="app.handleLogin(event, 'siswa')" class="space-y-4 max-w-md mx-auto text-left">
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nama Lengkap Siswa</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-user"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="input-nama-siswa"
+                    required
+                    placeholder="Contoh: Naura"
+                    class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all"
+                  />
                 </div>
-                <div id="candidates-mpk-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <!-- Injected via JS -->
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Kelas</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-chalkboard"></i>
+                  </span>
+                  <select
+                    id="input-kelas-siswa"
+                    required
+                    class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium text-sm transition-all"
+                  >
+                    <option value="" disabled selected>Pilih Kelas Anda</option>
+                    <optgroup label="Kelas 7">
+                      <option value="7A">Kelas 7A</option>
+                      <option value="7B">Kelas 7B</option>
+                      <option value="7C">Kelas 7C</option>
+                      <option value="7D">Kelas 7D</option>
+                      <option value="7E">Kelas 7E</option>
+                      <option value="7F">Kelas 7F</option>
+                      <option value="7G">Kelas 7G</option>
+                      <option value="7H">Kelas 7H</option>
+                    </optgroup>
+                    <optgroup label="Kelas 8">
+                      <option value="8A">Kelas 8A</option>
+                      <option value="8B">Kelas 8B</option>
+                      <option value="8C">Kelas 8C</option>
+                      <option value="8D">Kelas 8D</option>
+                      <option value="8E">Kelas 8E</option>
+                      <option value="8F">Kelas 8F</option>
+                      <option value="8G">Kelas 8G</option>
+                      <option value="8H">Kelas 8H</option>
+                    </optgroup>
+                    <optgroup label="Kelas 9">
+                      <option value="9A">Kelas 9A</option>
+                      <option value="9B">Kelas 9B</option>
+                      <option value="9C">Kelas 9C</option>
+                      <option value="9D">Kelas 9D</option>
+                      <option value="9E">Kelas 9E</option>
+                      <option value="9F">Kelas 9F</option>
+                      <option value="9G">Kelas 9G</option>
+                      <option value="9H">Kelas 9H</option>
+                    </optgroup>
+                  </select>
                 </div>
+              </div>
+              <button
+                type="submit"
+                class="w-full py-3.5 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2 text-sm mt-2"
+              >
+                <span>Masuk & Mulai Memilih (Siswa)</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </form>
+
+            <!-- Form Login Guru -->
+            <form id="form-login-guru" onsubmit="app.handleLogin(event, 'guru')" class="space-y-4 max-w-md mx-auto text-left hidden">
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nama Lengkap & Gelar Guru</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="input-nama-guru"
+                    required
+                    placeholder="Contoh: Drs. Budi Santoso, M.Pd."
+                    class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">NIP / Kode Guru</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid id-card"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="input-nip-guru"
+                    required
+                    placeholder="Contoh: 198001012005011001"
+                    class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="w-full py-3.5 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2 text-sm mt-2"
+              >
+                <span>Masuk & Mulai Memilih (Guru)</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-slate-100 text-xs text-slate-400 flex items-center justify-center gap-4">
+              <span class="flex items-center gap-1"><i class="fa-solid fa-lock text-brand-600"></i> Transparan</span>
+              <span class="flex items-center gap-1"><i class="fa-solid fa-user-shield text-brand-600"></i> 1 Pemilih 1 Hak Suara</span>
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        <!-- VIEW 3: ADMIN & TEACHER LOGIN -->
-        <section id="view-admin-login" class="view-section hidden max-w-md mx-auto mt-12">
-            <div class="clay-card rounded-2xl p-8">
-                <div class="text-center mb-6">
-                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-inner">
-                        <i class="fa-solid fa-key text-xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-slate-900">Akses Khusus Admin & Guru</h3>
-                    <p class="text-xs text-slate-500 mt-1">Masukkan PIN otorisasi untuk membuka live skor OSIS & MPK.</p>
-                </div>
+      <!-- VIEW 2: VOTING DASHBOARD (3 Paslon OSIS & 2 Paslon MPK) -->
+      <section id="view-voting" class="view-section hidden space-y-12">
+        <!-- Bagian 1: Pemilihan OSIS -->
+        <div id="step-osis-container">
+          <div class="text-center max-w-3xl mx-auto mb-8">
+            <span class="px-3.5 py-1.5 bg-brand-100 text-brand-800 text-xs font-bold rounded-full uppercase tracking-wider mb-3 inline-block">Tahap 1 dari 2</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-1">Pemilihan Calon Ketua & Wakil Ketua OSIS</h2>
+            <p class="text-slate-500 text-sm sm:text-base mt-2">Pilih salah satu dari 3 pasangan calon pengurus OSIS SMPN 162 Jakarta periode mendatang.</p>
+          </div>
+          <div id="candidates-osis-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Injected via JS -->
+          </div>
+        </div>
 
-                <form onsubmit="app.handleAdminLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">PIN Akses</label>
-                        <input type="password" id="input-admin-pin" required placeholder="Masukkan PIN..." class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm font-medium">
-                    </div>
-                    <div id="admin-login-error" class="hidden text-xs text-red-600 font-semibold bg-red-50 p-2.5 rounded-lg border border-red-200">
-                        PIN salah! Gunakan <span class="font-bold">admin123</span> atau <span class="font-bold">guru123</span>.
-                    </div>
-                    <div class="flex gap-3 pt-2">
-                        <button type="button" onclick="router.navigate('home')" class="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all">Batal</button>
-                        <button type="submit" class="w-2/3 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-lg transition-all">Buka Dashboard</button>
-                    </div>
-                </form>
+        <!-- Bagian 2: Pemilihan MPK -->
+        <div id="step-mpk-container" class="hidden pt-8 border-t border-slate-200">
+          <div class="text-center max-w-3xl mx-auto mb-8">
+            <span class="px-3.5 py-1.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full uppercase tracking-wider mb-3 inline-block">Tahap 2 dari 2</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-1">Pemilihan Calon Pengurus MPK</h2>
+            <p class="text-slate-500 text-sm sm:text-base mt-2">Pilih salah satu dari 2 pasangan calon pengurus Majelis Perwakilan Kelas (MPK).</p>
+          </div>
+          <div id="candidates-mpk-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: ADMIN & TEACHER LOGIN -->
+      <section id="view-admin-login" class="view-section hidden max-w-md mx-auto mt-12">
+        <div class="clay-card rounded-2xl p-8">
+          <div class="text-center mb-6">
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+              <i class="fa-solid fa-key text-xl"></i>
             </div>
-        </section>
+            <h3 class="text-2xl font-bold text-slate-900">Akses Khusus Admin & Guru</h3>
+            <p class="text-xs text-slate-500 mt-1">Masukkan PIN otorisasi untuk membuka live skor OSIS & MPK.</p>
+          </div>
 
-        <!-- VIEW 4: LIVE SCORE DASHBOARD -->
-        <section id="view-dashboard" class="view-section hidden space-y-8">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                <div>
-                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg mb-2">
-                        <i class="fa-solid fa-circle text-[8px] animate-pulse text-emerald-600"></i> Live Skor Pemilu Raya SMPN 162 Jakarta
-                    </div>
-                    <h2 class="text-2xl font-extrabold text-slate-900">Dashboard Pemantauan & Analisis</h2>
-                    <p class="text-xs text-slate-500">Hasil suara real-time terpisah untuk Kandidat OSIS dan Kandidat MPK serta daftar pemilih.</p>
-                </div>
-                <div class="flex items-center gap-3 flex-wrap">
-                    <button onclick="app.exportData()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs flex items-center gap-2 transition-all border border-slate-300">
-                        <i class="fa-solid fa-download text-brand-600"></i> Export Laporan JSON
-                    </button>
-                    <button onclick="app.resetElectionData()" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-bold text-xs flex items-center gap-2 transition-all border border-red-200">
-                        <i class="fa-solid fa-rotate-right"></i> Reset Suara
-                    </button>
-                    <button onclick="router.navigate('home')" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-md">
-                        <i class="fa-solid fa-arrow-left"></i> Keluar Dashboard
-                    </button>
-                </div>
+          <form onsubmit="app.handleAdminLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1">PIN Akses</label>
+              <input
+                type="password"
+                id="input-admin-pin"
+                required
+                placeholder="Masukkan PIN..."
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm font-medium"
+              />
             </div>
-
-            <!-- Stats Overview Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
-                    <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-users"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs font-semibold uppercase text-slate-400">Total Partisipasi Pemilih</p>
-                        <h3 id="stat-total-voters" class="text-3xl font-extrabold text-slate-900 mt-0.5">0 Pemilih</h3>
-                    </div>
-                </div>
-                <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
-                    <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-award"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs font-semibold uppercase text-slate-400">Unggul OSIS</p>
-                        <h3 id="stat-leading-osis" class="text-sm font-bold text-slate-900 mt-1 truncate max-w-[200px]">Belum Ada Suara</h3>
-                    </div>
-                </div>
-                <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
-                    <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-medal"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs font-semibold uppercase text-slate-400">Unggul MPK</p>
-                        <h3 id="stat-leading-mpk" class="text-sm font-bold text-slate-900 mt-1 truncate max-w-[200px]">Belum Ada Suara</h3>
-                    </div>
-                </div>
+            <div id="admin-login-error" class="hidden text-xs text-red-600 font-semibold bg-red-50 p-2.5 rounded-lg border border-red-200">
+              PIN salah! Gunakan <span class="font-bold">admin123</span> atau <span class="font-bold">guru123</span>.
             </div>
-
-            <!-- BAGIAN 1: LIVE SKOR OSIS & TABEL REKAP -->
-            <div class="clay-card p-6 rounded-2xl space-y-6 border-t-4 border-t-emerald-600">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <div>
-                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Bagian 1</span>
-                        <h3 class="text-xl font-extrabold text-slate-900">Live Skor & Rekap Suara OSIS</h3>
-                    </div>
-                    <span class="text-xs text-slate-500 bg-emerald-50 px-3 py-1 rounded-lg font-semibold">3 Kandidat</span>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 relative h-64 w-full">
-                        <canvas id="scoreChartOsis"></canvas>
-                    </div>
-                    <div id="dashboard-osis-list" class="space-y-3 overflow-y-auto max-h-64 pr-1">
-                        <!-- Injected via JS -->
-                    </div>
-                </div>
-                <!-- Tabel Rekapitulasi OSIS -->
-                <div class="overflow-x-auto pt-4 border-t border-slate-100">
-                    <h4 class="text-sm font-bold text-slate-800 mb-3"><i class="fa-solid fa-table text-emerald-600 mr-2"></i>Tabel Detail Perolehan Suara OSIS</h4>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
-                                <th class="p-3 rounded-l-lg">No. Paslon</th>
-                                <th class="p-3">Nama Kandidat</th>
-                                <th class="p-3 text-center">Jumlah Suara</th>
-                                <th class="p-3 text-right rounded-r-lg">Persentase</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-rekap-osis" class="divide-y divide-slate-100 font-medium text-slate-600">
-                            <!-- Injected via JS -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="flex gap-3 pt-2">
+              <button type="button" onclick="router.navigate('home')" class="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all">Batal</button>
+              <button type="submit" class="w-2/3 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-lg transition-all">Buka Dashboard</button>
             </div>
+          </form>
+        </div>
+      </section>
 
-            <!-- BAGIAN 2: LIVE SKOR MPK & TABEL REKAP -->
-            <div class="clay-card p-6 rounded-2xl space-y-6 border-t-4 border-t-blue-600">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <div>
-                        <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Bagian 2</span>
-                        <h3 class="text-xl font-extrabold text-slate-900">Live Skor & Rekap Suara MPK</h3>
-                    </div>
-                    <span class="text-xs text-slate-500 bg-blue-50 px-3 py-1 rounded-lg font-semibold">2 Kandidat</span>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 relative h-64 w-full">
-                        <canvas id="scoreChartMpk"></canvas>
-                    </div>
-                    <div id="dashboard-mpk-list" class="space-y-3 overflow-y-auto max-h-64 pr-1">
-                        <!-- Injected via JS -->
-                    </div>
-                </div>
-                <!-- Tabel Rekapitulasi MPK -->
-                <div class="overflow-x-auto pt-4 border-t border-slate-100">
-                    <h4 class="text-sm font-bold text-slate-800 mb-3"><i class="fa-solid fa-table text-blue-600 mr-2"></i>Tabel Detail Perolehan Suara MPK</h4>
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
-                                <th class="p-3 rounded-l-lg">No. Paslon</th>
-                                <th class="p-3">Nama Kandidat</th>
-                                <th class="p-3 text-center">Jumlah Suara</th>
-                                <th class="p-3 text-right rounded-r-lg">Persentase</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-rekap-mpk" class="divide-y divide-slate-100 font-medium text-slate-600">
-                            <!-- Injected via JS -->
-                        </tbody>
-                    </table>
-                </div>
+      <!-- VIEW 4: LIVE SCORE DASHBOARD -->
+      <section id="view-dashboard" class="view-section hidden space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg mb-2">
+              <i class="fa-solid fa-circle text-[8px] animate-pulse text-emerald-600"></i> Live Skor Pemilu Raya SMPN 162 Jakarta
             </div>
+            <h2 class="text-2xl font-extrabold text-slate-900">Dashboard Pemantauan & Analisis</h2>
+            <p class="text-xs text-slate-500">Hasil suara real-time terpisah untuk Kandidat OSIS dan Kandidat MPK serta daftar pemilih.</p>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <button
+              onclick="app.exportData()"
+              class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs flex items-center gap-2 transition-all border border-slate-300"
+            >
+              <i class="fa-solid fa-download text-brand-600"></i> Export Laporan JSON
+            </button>
+            <button
+              onclick="app.resetElectionData()"
+              class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-bold text-xs flex items-center gap-2 transition-all border border-red-200"
+            >
+              <i class="fa-solid fa-rotate-right"></i> Reset Suara
+            </button>
+            <button onclick="router.navigate('home')" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-md">
+              <i class="fa-solid fa-arrow-left"></i> Keluar Dashboard
+            </button>
+          </div>
+        </div>
 
-            <!-- BAGIAN 3: DAFTAR PEMILIH YANG SUDAH MELAKUKAN PEMILIHAN & FILTER KELAS -->
-            <div class="clay-card p-6 rounded-2xl space-y-4 border-t-4 border-t-purple-600">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
-                    <div>
-                        <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Partisipasi</span>
-                        <h3 class="text-xl font-extrabold text-slate-900">Daftar Pemilih yang Sudah Memilih</h3>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <label class="text-xs font-bold uppercase text-slate-600">Filter Kategori:</label>
-                        <select id="filter-kelas" onchange="app.renderVotersTable()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                            <option value="ALL">Semua Pemilih</option>
-                            <option value="GURU">Guru / Staf</option>
-                            <optgroup label="Kelas 7">
-                                <option value="7A">7A</option><option value="7B">7B</option><option value="7C">7C</option><option value="7D">7D</option><option value="7E">7E</option><option value="7F">7F</option><option value="7G">7G</option><option value="7H">7H</option>
-                            </optgroup>
-                            <optgroup label="Kelas 8">
-                                <option value="8A">8A</option><option value="8B">8B</option><option value="8C">8C</option><option value="8D">8D</option><option value="8E">8E</option><option value="8F">8F</option><option value="8G">8G</option><option value="8H">8H</option>
-                            </optgroup>
-                            <optgroup label="Kelas 9">
-                                <option value="9A">9A</option><option value="9B">9B</option><option value="9C">9C</option><option value="9D">9D</option><option value="9E">9E</option><option value="9F">9F</option><option value="9G">9G</option><option value="9H">9H</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
-                                <th class="p-3 rounded-l-lg">No</th>
-                                <th class="p-3">Nama Pemilih</th>
-                                <th class="p-3">Kelas / Kategori</th>
-                                <th class="p-3">Waktu Memilih</th>
-                                <th class="p-3 text-center rounded-r-lg">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-voters-list" class="divide-y divide-slate-100 font-medium text-slate-600">
-                            <!-- Injected via JS -->
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Stats Overview Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
+            <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              <i class="fa-solid fa-users"></i>
             </div>
-        </section>
+            <div>
+              <p class="text-xs font-semibold uppercase text-slate-400">Total Partisipasi Pemilih</p>
+              <h3 id="stat-total-voters" class="text-3xl font-extrabold text-slate-900 mt-0.5">0 Pemilih</h3>
+            </div>
+          </div>
+          <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
+            <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase text-slate-400">Unggul OSIS</p>
+              <h3 id="stat-leading-osis" class="text-sm font-bold text-slate-900 mt-1 truncate max-w-[200px]">Belum Ada Suara</h3>
+            </div>
+          </div>
+          <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
+            <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              <i class="fa-solid fa-medal"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase text-slate-400">Unggul MPK</p>
+              <h3 id="stat-leading-mpk" class="text-sm font-bold text-slate-900 mt-1 truncate max-w-[200px]">Belum Ada Suara</h3>
+            </div>
+          </div>
+        </div>
 
+        <!-- BAGIAN 1: LIVE SKOR OSIS & TABEL REKAP -->
+        <div class="clay-card p-6 rounded-2xl space-y-6 border-t-4 border-t-emerald-600">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Bagian 1</span>
+              <h3 class="text-xl font-extrabold text-slate-900">Live Skor & Rekap Suara OSIS</h3>
+            </div>
+            <span class="text-xs text-slate-500 bg-emerald-50 px-3 py-1 rounded-lg font-semibold">3 Kandidat</span>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 relative h-64 w-full">
+              <canvas id="scoreChartOsis"></canvas>
+            </div>
+            <div id="dashboard-osis-list" class="space-y-3 overflow-y-auto max-h-64 pr-1">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+          <!-- Tabel Rekapitulasi OSIS -->
+          <div class="overflow-x-auto pt-4 border-t border-slate-100">
+            <h4 class="text-sm font-bold text-slate-800 mb-3"><i class="fa-solid fa-table text-emerald-600 mr-2"></i>Tabel Detail Perolehan Suara OSIS</h4>
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
+                  <th class="p-3 rounded-l-lg">No. Paslon</th>
+                  <th class="p-3">Nama Kandidat</th>
+                  <th class="p-3 text-center">Jumlah Suara</th>
+                  <th class="p-3 text-right rounded-r-lg">Persentase</th>
+                </tr>
+              </thead>
+              <tbody id="table-rekap-osis" class="divide-y divide-slate-100 font-medium text-slate-600">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- BAGIAN 2: LIVE SKOR MPK & TABEL REKAP -->
+        <div class="clay-card p-6 rounded-2xl space-y-6 border-t-4 border-t-blue-600">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Bagian 2</span>
+              <h3 class="text-xl font-extrabold text-slate-900">Live Skor & Rekap Suara MPK</h3>
+            </div>
+            <span class="text-xs text-slate-500 bg-blue-50 px-3 py-1 rounded-lg font-semibold">2 Kandidat</span>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 relative h-64 w-full">
+              <canvas id="scoreChartMpk"></canvas>
+            </div>
+            <div id="dashboard-mpk-list" class="space-y-3 overflow-y-auto max-h-64 pr-1">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+          <!-- Tabel Rekapitulasi MPK -->
+          <div class="overflow-x-auto pt-4 border-t border-slate-100">
+            <h4 class="text-sm font-bold text-slate-800 mb-3"><i class="fa-solid fa-table text-blue-600 mr-2"></i>Tabel Detail Perolehan Suara MPK</h4>
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
+                  <th class="p-3 rounded-l-lg">No. Paslon</th>
+                  <th class="p-3">Nama Kandidat</th>
+                  <th class="p-3 text-center">Jumlah Suara</th>
+                  <th class="p-3 text-right rounded-r-lg">Persentase</th>
+                </tr>
+              </thead>
+              <tbody id="table-rekap-mpk" class="divide-y divide-slate-100 font-medium text-slate-600">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- BAGIAN 3: DAFTAR PEMILIH YANG SUDAH MELAKUKAN PEMILIHAN & FILTER KELAS -->
+        <div class="clay-card p-6 rounded-2xl space-y-4 border-t-4 border-t-purple-600">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Partisipasi</span>
+              <h3 class="text-xl font-extrabold text-slate-900">Daftar Pemilih yang Sudah Memilih</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-bold uppercase text-slate-600">Filter Kategori:</label>
+              <select
+                id="filter-kelas"
+                onchange="app.renderVotersTable()"
+                class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              >
+                <option value="ALL">Semua Pemilih</option>
+                <option value="GURU">Guru / Staf</option>
+                <optgroup label="Kelas 7">
+                  <option value="7A">7A</option>
+                  <option value="7B">7B</option>
+                  <option value="7C">7C</option>
+                  <option value="7D">7D</option>
+                  <option value="7E">7E</option>
+                  <option value="7F">7F</option>
+                  <option value="7G">7G</option>
+                  <option value="7H">7H</option>
+                </optgroup>
+                <optgroup label="Kelas 8">
+                  <option value="8A">8A</option>
+                  <option value="8B">8B</option>
+                  <option value="8C">8C</option>
+                  <option value="8D">8D</option>
+                  <option value="8E">8E</option>
+                  <option value="8F">8F</option>
+                  <option value="8G">8G</option>
+                  <option value="8H">8H</option>
+                </optgroup>
+                <optgroup label="Kelas 9">
+                  <option value="9A">9A</option>
+                  <option value="9B">9B</option>
+                  <option value="9C">9C</option>
+                  <option value="9D">9D</option>
+                  <option value="9E">9E</option>
+                  <option value="9F">9F</option>
+                  <option value="9G">9G</option>
+                  <option value="9H">9H</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
+                  <th class="p-3 rounded-l-lg">No</th>
+                  <th class="p-3">Nama Pemilih</th>
+                  <th class="p-3">Kelas / Kategori</th>
+                  <th class="p-3">Waktu Memilih</th>
+                  <th class="p-3 text-center rounded-r-lg">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-voters-list" class="divide-y divide-slate-100 font-medium text-slate-600">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Modal Konfirmasi Pilihan -->
     <div id="modal-confirm" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-        <div class="clay-card bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl">
-            <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
-                <i class="fa-solid fa-circle-question"></i>
-            </div>
-            <h3 class="text-xl font-extrabold text-slate-900">Konfirmasi Pilihan <span id="modal-type-title">OSIS</span></h3>
-            <p class="text-slate-500 text-sm mt-2 mb-6">Anda memilih <span id="modal-candidate-name" class="font-bold text-slate-800">Paslon</span>. Pilihan tidak dapat diubah setelah dikonfirmasi.</p>
-            <div class="flex gap-3">
-                <button onclick="app.closeModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all">Periksa Lagi</button>
-                <button onclick="app.confirmVote()" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all">Ya, Lanjutkan</button>
-            </div>
+      <div class="clay-card bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl">
+        <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+          <i class="fa-solid fa-circle-question"></i>
         </div>
+        <h3 class="text-xl font-extrabold text-slate-900">Konfirmasi Pilihan <span id="modal-type-title">OSIS</span></h3>
+        <p class="text-slate-500 text-sm mt-2 mb-6">Anda memilih <span id="modal-candidate-name" class="font-bold text-slate-800">Paslon</span>. Pilihan tidak dapat diubah setelah dikonfirmasi.</p>
+        <div class="flex gap-3">
+          <button onclick="app.closeModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all">Periksa Lagi</button>
+          <button onclick="app.confirmVote()" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all">Ya, Lanjutkan</button>
+        </div>
+      </div>
     </div>
 
     <!-- Toast Notifikasi -->
     <div id="toast-success" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300">
-        <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-xl flex items-center gap-3 border border-slate-700">
-            <div class="w-8 h-8 rounded-lg bg-brand-500 text-white flex items-center justify-center font-bold">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            <div>
-                <h4 id="toast-title" class="text-xs font-bold">Sukses</h4>
-                <p id="toast-msg" class="text-[11px] text-slate-300">Aksi berhasil dilakukan.</p>
-            </div>
+      <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-xl flex items-center gap-3 border border-slate-700">
+        <div class="w-8 h-8 rounded-lg bg-brand-500 text-white flex items-center justify-center font-bold">
+          <i class="fa-solid fa-check"></i>
         </div>
+        <div>
+          <h4 id="toast-title" class="text-xs font-bold">Sukses</h4>
+          <p id="toast-msg" class="text-[11px] text-slate-300">Aksi berhasil dilakukan.</p>
+        </div>
+      </div>
     </div>
 
     <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-400">
-        <div class="max-w-7xl mx-auto px-4">
-            <p>© 2026 E-Voting OSIS & MPK - SMP Negeri 162 Jakarta. Sistem Demokrasi Digital Transparan.</p>
-        </div>
+      <div class="max-w-7xl mx-auto px-4">
+        <p>© 2026 E-Voting OSIS & MPK - SMP Negeri 162 Jakarta. Sistem Demokrasi Digital Transparan.</p>
+      </div>
     </footer>
 
     <script>
-       
-        const CANDIDATES_OSIS = [
-            {
-                id: 'osis_1',
-                number: "01",
-                name: "Ahmad Fauzi & Salsabila Zahra",
-                tagline: "Inovatif, Kreatif, & Berkelanjutan",
-                vision: "Mewujudkan OSIS sebagai wadah aspirasi siswa yang proaktif, berintegritas tinggi, dan berwawasan lingkungan.",
-                mission: [
-                    "Mengoptimalkan program kerja digital berbasis aplikasi sekolah.",
-                    "Mengadakan ajang kreativitas seni dan sains antar kelas.",
-                    "Membangun kedisiplinan positif dan kepedulian sosial."
-                ],
-                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60",
-                color: "#22c55e"
-            },
-            {
-                id: 'osis_2',
-                number: "02",
-                name: "Rizky Pratama & Alya Nurul",
-                tagline: "Solid, Sportif, & Berprestasi",
-                vision: "Menjadikan siswa-siswi unggul dalam akademik maupun non-akademik dengan menjunjung tinggi kekeluargaan.",
-                mission: [
-                    "Mendukung penuh pengembangan bakat olahraga dan seni.",
-                    "Membentuk kelompok belajar sebaya untuk prestasi akademik.",
-                    "Meningkatkan transparansi kegiatan OSIS."
-                ],
-                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60",
-                color: "#3b82f6"
-            },
-            {
-                id: 'osis_3',
-                number: "03",
-                name: "Devi Anggraini & Muhammad Farhan",
-                tagline: "Smart, Religius, & Berkarakter",
-                vision: "Membentuk generasi pelajar yang cerdas secara intelektual, kuat dalam keimanan, dan berakhlak mulia.",
-                mission: [
-                    "Mengadakan kegiatan keagamaan yang harmonis dan inklusif.",
-                    "Membuka pojok literasi digital sekolah.",
-                    "Pelatihan public speaking dasar untuk siswa."
-                ],
-                avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60",
-                color: "#a855f7"
+      const CANDIDATES_OSIS = [
+        {
+          id: "osis_1",
+          number: "01",
+          name: "Ahmad Fauzi & Salsabila Zahra",
+          tagline: "Inovatif, Kreatif, & Berkelanjutan",
+          vision: "Mewujudkan OSIS sebagai wadah aspirasi siswa yang proaktif, berintegritas tinggi, dan berwawasan lingkungan.",
+          mission: [
+            "Mengoptimalkan program kerja digital berbasis aplikasi sekolah.",
+            "Mengadakan ajang kreativitas seni dan sains antar kelas.",
+            "Membangun kedisiplinan positif dan kepedulian sosial.",
+          ],
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60",
+          color: "#22c55e",
+        },
+        {
+          id: "osis_2",
+          number: "02",
+          name: "Rizky Pratama & Alya Nurul",
+          tagline: "Solid, Sportif, & Berprestasi",
+          vision: "Menjadikan siswa-siswi unggul dalam akademik maupun non-akademik dengan menjunjung tinggi kekeluargaan.",
+          mission: ["Mendukung penuh pengembangan bakat olahraga dan seni.", "Membentuk kelompok belajar sebaya untuk prestasi akademik.", "Meningkatkan transparansi kegiatan OSIS."],
+          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60",
+          color: "#3b82f6",
+        },
+        {
+          id: "osis_3",
+          number: "03",
+          name: "Devi Anggraini & Muhammad Farhan",
+          tagline: "Smart, Religius, & Berkarakter",
+          vision: "Membentuk generasi pelajar yang cerdas secara intelektual, kuat dalam keimanan, dan berakhlak mulia.",
+          mission: ["Mengadakan kegiatan keagamaan yang harmonis dan inklusif.", "Membuka pojok literasi digital sekolah.", "Pelatihan public speaking dasar untuk siswa."],
+          avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60",
+          color: "#a855f7",
+        },
+      ];
+
+      const CANDIDATES_MPK = [
+        {
+          id: "mpk_1",
+          number: "01",
+          name: "Dimas Saputra & Clara Anindya",
+          tagline: "Pengawasan Aktif & Aspiratif",
+          vision: "Mengoptimalkan fungsi pengawasan kinerja OSIS secara transparan demi kemajuan bersama warga SMPN 162 Jakarta.",
+          mission: ["Membuka saluran aspirasi langsung tanpa sekat.", "Mengevaluasi program kerja OSIS secara berkala dan objektif.", "Menjunjung tinggi etika dan tata tertib sekolah."],
+          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60",
+          color: "#f59e0b",
+        },
+        {
+          id: "mpk_2",
+          number: "02",
+          name: "Nabilah Putri & Zidan Alfarezi",
+          tagline: "Kritis, Solutif, & Berintegritas",
+          vision: "Menjadikan MPK sebagai lembaga legislatif siswa yang aktif menampung dan menyalurkan aspirasi secara bijaksana.",
+          mission: ["Mengadakan musyawarah perwakilan kelas tiap bulan.", "Mengawal transparansi program kegiatan siswa.", "Meningkatkan sinergi yang harmonis antara MPK, OSIS, dan pihak sekolah."],
+          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60",
+          color: "#ec4899",
+        },
+      ];
+
+      const router = {
+        navigate: function (viewId) {
+          document.querySelectorAll(".view-section").forEach((el) => el.classList.add("hidden"));
+          const target = document.getElementById(`view-${viewId}`);
+          if (target) target.classList.remove("hidden");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+
+          if (viewId === "dashboard") {
+            app.renderDashboard();
+          } else if (viewId === "voting") {
+            app.renderVotingStep();
+          }
+        },
+      };
+
+      class EvotingApp {
+        constructor() {
+          try {
+            const savedUser = localStorage.getItem("osis_current_user");
+            this.currentUser = savedUser && savedUser !== "undefined" ? JSON.parse(savedUser) : null;
+          } catch (e) {
+            this.currentUser = null;
+          }
+
+          try {
+            this.votesOsis = JSON.parse(localStorage.getItem("osis_votes_osis") || "{}");
+          } catch (e) {
+            this.votesOsis = {};
+          }
+
+          try {
+            this.votesMpk = JSON.parse(localStorage.getItem("osis_votes_mpk") || "{}");
+          } catch (e) {
+            this.votesMpk = {};
+          }
+
+          try {
+            this.votedUsers = JSON.parse(localStorage.getItem("osis_voted_users") || "[]");
+          } catch (e) {
+            this.votedUsers = [];
+          }
+
+          this.selectedCandidate = null;
+          this.chartOsisInstance = null;
+          this.chartMpkInstance = null;
+
+          this.init();
+        }
+
+        init() {
+          if (this.currentUser && this.currentUser.nama && this.currentUser.kelas) {
+            const userKey = `${this.currentUser.nama}_${this.currentUser.kelas}`;
+            if (this.votedUsers.some((u) => u.userKey === userKey)) {
+              this.showVotedNotice();
+            } else {
+              router.navigate("voting");
             }
-        ];
+            this.updateNavBadge();
+          } else {
+            router.navigate("home");
+          }
+        }
 
-        const CANDIDATES_MPK = [
-            {
-                id: 'mpk_1',
-                number: "01",
-                name: "Dimas Saputra & Clara Anindya",
-                tagline: "Pengawasan Aktif & Aspiratif",
-                vision: "Mengoptimalkan fungsi pengawasan kinerja OSIS secara transparan demi kemajuan bersama warga SMPN 162 Jakarta.",
-                mission: [
-                    "Membuka saluran aspirasi langsung tanpa sekat.",
-                    "Mengevaluasi program kerja OSIS secara berkala dan objektif.",
-                    "Menjunjung tinggi etika dan tata tertib sekolah."
-                ],
-                avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60",
-                color: "#f59e0b"
-            },
-            {
-                id: 'mpk_2',
-                number: "02",
-                name: "Nabilah Putri & Zidan Alfarezi",
-                tagline: "Kritis, Solutif, & Berintegritas",
-                vision: "Menjadikan MPK sebagai lembaga legislatif siswa yang aktif menampung dan menyalurkan aspirasi secara bijaksana.",
-                mission: [
-                    "Mengadakan musyawarah perwakilan kelas tiap bulan.",
-                    "Mengawal transparansi program kegiatan siswa.",
-                    "Meningkatkan sinergi yang harmonis antara MPK, OSIS, dan pihak sekolah."
-                ],
-                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60",
-                color: "#ec4899"
-            }
-        ];
+        switchLoginRole(role) {
+          const btnSiswa = document.getElementById("tab-btn-siswa");
+          const btnGuru = document.getElementById("tab-btn-guru");
+          const formSiswa = document.getElementById("form-login-siswa");
+          const formGuru = document.getElementById("form-login-guru");
+          const desc = document.getElementById("login-desc");
 
-        const router = {
-            navigate: function(viewId) {
-                document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-                const target = document.getElementById(`view-${viewId}`);
-                if (target) target.classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (role === "siswa") {
+            btnSiswa.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white text-brand-700 shadow-xs";
+            btnGuru.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
+            formSiswa.classList.remove("hidden");
+            formGuru.classList.add("hidden");
+            desc.textContent = "Silakan masukkan Nama Lengkap dan Kelas Anda untuk mulai memberikan suara.";
+          } else {
+            btnGuru.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white text-brand-700 shadow-xs";
+            btnSiswa.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
+            formGuru.classList.remove("hidden");
+            formSiswa.classList.add("hidden");
+            desc.textContent = "Silakan masukkan Nama Lengkap & Gelar serta NIP/Kode Guru Anda.";
+          }
+        }
 
-                if (viewId === 'dashboard') {
-                    app.renderDashboard();
-                } else if (viewId === 'voting') {
-                    app.renderVotingStep();
-                }
-            }
-        };
+        updateNavBadge() {
+          const badge = document.getElementById("nav-user-badge");
+          const disp = document.getElementById("nav-user-display");
+          if (this.currentUser && this.currentUser.nama) {
+            badge.classList.remove("hidden");
+            badge.classList.add("flex");
+            disp.textContent = `${this.currentUser.nama} (${this.currentUser.kelas})`;
+          } else {
+            badge.classList.add("hidden");
+            badge.classList.remove("flex");
+          }
+        }
 
-        class EvotingApp {
-            constructor() {
-                try {
-                    const savedUser = localStorage.getItem('osis_current_user');
-                    this.currentUser = (savedUser && savedUser !== "undefined") ? JSON.parse(savedUser) : null;
-                } catch (e) {
-                    this.currentUser = null;
-                }
+        handleLogin(e, role) {
+          e.preventDefault();
+          let nama, kelas;
 
-                try {
-                    this.votesOsis = JSON.parse(localStorage.getItem('osis_votes_osis') || '{}');
-                } catch (e) { this.votesOsis = {}; }
+          if (role === "siswa") {
+            const namaEl = document.getElementById("input-nama-siswa");
+            const kelasEl = document.getElementById("input-kelas-siswa");
+            if (!namaEl || !kelasEl) return;
+            nama = namaEl.value.trim();
+            kelas = kelasEl.value;
+            namaEl.value = "";
+            kelasEl.value = "";
+          } else {
+            const namaEl = document.getElementById("input-nama-guru");
+            const nipEl = document.getElementById("input-nip-guru");
+            if (!namaEl || !nipEl) return;
+            nama = namaEl.value.trim();
+            kelas = `GURU (${nipEl.value.trim()})`;
+            namaEl.value = "";
+            nipEl.value = "";
+          }
 
-                try {
-                    this.votesMpk = JSON.parse(localStorage.getItem('osis_votes_mpk') || '{}');
-                } catch (e) { this.votesMpk = {}; }
+          if (!nama || !kelas) return;
 
-                try {
-                    this.votedUsers = JSON.parse(localStorage.getItem('osis_voted_users') || '[]');
-                } catch (e) { this.votedUsers = []; }
+          this.currentUser = { nama, kelas };
+          localStorage.setItem("osis_current_user", JSON.stringify(this.currentUser));
+          this.updateNavBadge();
 
-                this.selectedCandidate = null;
-                this.chartOsisInstance = null;
-                this.chartMpkInstance = null;
+          const userKey = `${nama}_${kelas}`;
+          if (this.votedUsers.some((u) => u.userKey === userKey)) {
+            this.showVotedNotice();
+          } else {
+            router.navigate("voting");
+            this.showToast("Login Berhasil", `Selamat datang, ${nama} (${kelas}). Silakan lakukan pemilihan.`);
+          }
+        }
 
-                this.init();
-            }
+        handleAdminLogin(e) {
+          e.preventDefault();
+          const pinEl = document.getElementById("input-admin-pin");
+          if (!pinEl) return;
+          const pin = pinEl.value.trim();
+          const errBox = document.getElementById("admin-login-error");
 
-            init() {
-                if (this.currentUser && this.currentUser.nama && this.currentUser.kelas) {
-                    const userKey = `${this.currentUser.nama}_${this.currentUser.kelas}`;
-                    if (this.votedUsers.some(u => u.userKey === userKey)) {
-                        this.showVotedNotice();
-                    } else {
-                        router.navigate('voting');
-                    }
-                    this.updateNavBadge();
-                } else {
-                    router.navigate('home');
-                }
-            }
+          if (pin === "admin123" || pin === "guru123") {
+            if (errBox) errBox.classList.add("hidden");
+            pinEl.value = "";
+            router.navigate("dashboard");
+            this.showToast("Akses Diberikan", "Berhasil masuk ke Dashboard Live Skor Admin & Guru.");
+          } else {
+            if (errBox) errBox.classList.remove("hidden");
+          }
+        }
 
-            switchLoginRole(role) {
-                const btnSiswa = document.getElementById('tab-btn-siswa');
-                const btnGuru = document.getElementById('tab-btn-guru');
-                const formSiswa = document.getElementById('form-login-siswa');
-                const formGuru = document.getElementById('form-login-guru');
-                const desc = document.getElementById('login-desc');
+        logout() {
+          this.currentUser = null;
+          localStorage.removeItem("osis_current_user");
+          this.updateNavBadge();
+          router.navigate("home");
+          this.showToast("Keluar", "Sesi pemilih telah diakhiri.");
+        }
 
-                if (role === 'siswa') {
-                    btnSiswa.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white text-brand-700 shadow-xs";
-                    btnGuru.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
-                    formSiswa.classList.remove('hidden');
-                    formGuru.classList.add('hidden');
-                    desc.textContent = "Silakan masukkan Nama Lengkap dan Kelas Anda untuk mulai memberikan suara.";
-                } else {
-                    btnGuru.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white text-brand-700 shadow-xs";
-                    btnSiswa.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
-                    formGuru.classList.remove('hidden');
-                    formSiswa.classList.add('hidden');
-                    desc.textContent = "Silakan masukkan Nama Lengkap & Gelar serta NIP/Kode Guru Anda.";
-                }
-            }
+        renderVotingStep() {
+          const osisContainer = document.getElementById("step-osis-container");
+          const mpkContainer = document.getElementById("step-mpk-container");
+          if (!osisContainer || !mpkContainer) return;
 
-            updateNavBadge() {
-                const badge = document.getElementById('nav-user-badge');
-                const disp = document.getElementById('nav-user-display');
-                if (this.currentUser && this.currentUser.nama) {
-                    badge.classList.remove('hidden');
-                    badge.classList.add('flex');
-                    disp.textContent = `${this.currentUser.nama} (${this.currentUser.kelas})`;
-                } else {
-                    badge.classList.add('hidden');
-                    badge.classList.remove('flex');
-                }
-            }
+          const userKey = this.currentUser ? `${this.currentUser.nama}_${this.currentUser.kelas}` : "";
+          const hasVotedOsis = localStorage.getItem(`voted_osis_${userKey}`) === "true";
 
-            handleLogin(e, role) {
-                e.preventDefault();
-                let nama, kelas;
+          if (!hasVotedOsis) {
+            osisContainer.classList.remove("hidden");
+            mpkContainer.classList.add("hidden");
+            this.renderOsisGrid();
+          } else {
+            osisContainer.classList.add("hidden");
+            mpkContainer.classList.remove("hidden");
+            this.renderMpkGrid();
+          }
+        }
 
-                if (role === 'siswa') {
-                    const namaEl = document.getElementById('input-nama-siswa');
-                    const kelasEl = document.getElementById('input-kelas-siswa');
-                    if (!namaEl || !kelasEl) return;
-                    nama = namaEl.value.trim();
-                    kelas = kelasEl.value;
-                    namaEl.value = '';
-                    kelasEl.value = '';
-                } else {
-                    const namaEl = document.getElementById('input-nama-guru');
-                    const nipEl = document.getElementById('input-nip-guru');
-                    if (!namaEl || !nipEl) return;
-                    nama = namaEl.value.trim();
-                    kelas = `GURU (${nipEl.value.trim()})`;
-                    namaEl.value = '';
-                    nipEl.value = '';
-                }
-
-                if (!nama || !kelas) return;
-
-                this.currentUser = { nama, kelas };
-                localStorage.setItem('osis_current_user', JSON.stringify(this.currentUser));
-                this.updateNavBadge();
-
-                const userKey = `${nama}_${kelas}`;
-                if (this.votedUsers.some(u => u.userKey === userKey)) {
-                    this.showVotedNotice();
-                } else {
-                    router.navigate('voting');
-                    this.showToast("Login Berhasil", `Selamat datang, ${nama} (${kelas}). Silakan lakukan pemilihan.`);
-                }
-            }
-
-            handleAdminLogin(e) {
-                e.preventDefault();
-                const pinEl = document.getElementById('input-admin-pin');
-                if (!pinEl) return;
-                const pin = pinEl.value.trim();
-                const errBox = document.getElementById('admin-login-error');
-
-                if (pin === 'admin123' || pin === 'guru123') {
-                    if (errBox) errBox.classList.add('hidden');
-                    pinEl.value = '';
-                    router.navigate('dashboard');
-                    this.showToast("Akses Diberikan", "Berhasil masuk ke Dashboard Live Skor Admin & Guru.");
-                } else {
-                    if (errBox) errBox.classList.remove('hidden');
-                }
-            }
-
-            logout() {
-                this.currentUser = null;
-                localStorage.removeItem('osis_current_user');
-                this.updateNavBadge();
-                router.navigate('home');
-                this.showToast("Keluar", "Sesi pemilih telah diakhiri.");
-            }
-
-            renderVotingStep() {
-                const osisContainer = document.getElementById('step-osis-container');
-                const mpkContainer = document.getElementById('step-mpk-container');
-                if (!osisContainer || !mpkContainer) return;
-
-                const userKey = this.currentUser ? `${this.currentUser.nama}_${this.currentUser.kelas}` : '';
-                const hasVotedOsis = localStorage.getItem(`voted_osis_${userKey}`) === 'true';
-
-                if (!hasVotedOsis) {
-                    osisContainer.classList.remove('hidden');
-                    mpkContainer.classList.add('hidden');
-                    this.renderOsisGrid();
-                } else {
-                    osisContainer.classList.add('hidden');
-                    mpkContainer.classList.remove('hidden');
-                    this.renderMpkGrid();
-                }
-            }
-
-            renderOsisGrid() {
-                const grid = document.getElementById('candidates-osis-grid');
-                if (!grid) return;
-                grid.innerHTML = CANDIDATES_OSIS.map(c => `
+        renderOsisGrid() {
+          const grid = document.getElementById("candidates-osis-grid");
+          if (!grid) return;
+          grid.innerHTML = CANDIDATES_OSIS.map(
+            (c) => `
                     <div class="candidate-card clay-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all border border-slate-200">
                         <div>
                             <div class="relative h-48 bg-slate-100 overflow-hidden">
-                                <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=OSIS+${c.number}'">
+                                <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=OSIS+${
+              c.number
+            }'">
                                 <div class="absolute top-4 left-4 bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-sm shadow-md">
                                     PASLON OSIS #${c.number}
                                 </div>
@@ -704,29 +786,35 @@
                                     <div>
                                         <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Misi</span>
                                         <ul class="space-y-1 text-slate-600 pl-4 list-disc">
-                                            ${c.mission.map(m => `<li>${m}</li>`).join('')}
+                                            ${c.mission.map((m) => `<li>${m}</li>`).join("")}
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="p-6 pt-0">
-                            <button onclick="app.openConfirmModal('osis', '${c.id}', '${c.name}')" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
+                            <button onclick="app.openConfirmModal('osis', '${c.id}', '${
+              c.name
+            }')" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
                                 <i class="fa-solid fa-square-check"></i> Pilih Paslon OSIS #${c.number}
                             </button>
                         </div>
                     </div>
-                `).join('');
-            }
+                `
+          ).join("");
+        }
 
-            renderMpkGrid() {
-                const grid = document.getElementById('candidates-mpk-grid');
-                if (!grid) return;
-                grid.innerHTML = CANDIDATES_MPK.map(c => `
+        renderMpkGrid() {
+          const grid = document.getElementById("candidates-mpk-grid");
+          if (!grid) return;
+          grid.innerHTML = CANDIDATES_MPK.map(
+            (c) => `
                     <div class="candidate-card clay-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all border border-slate-200">
                         <div>
                             <div class="relative h-48 bg-slate-100 overflow-hidden">
-                                <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=MPK+${c.number}'">
+                                <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=MPK+${
+              c.number
+            }'">
                                 <div class="absolute top-4 left-4 bg-blue-700 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-sm shadow-md">
                                     PASLON MPK #${c.number}
                                 </div>
@@ -742,117 +830,122 @@
                                     <div>
                                         <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Misi</span>
                                         <ul class="space-y-1 text-slate-600 pl-4 list-disc">
-                                            ${c.mission.map(m => `<li>${m}</li>`).join('')}
+                                            ${c.mission.map((m) => `<li>${m}</li>`).join("")}
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="p-6 pt-0">
-                            <button onclick="app.openConfirmModal('mpk', '${c.id}', '${c.name}')" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
+                            <button onclick="app.openConfirmModal('mpk', '${c.id}', '${
+              c.name
+            }')" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
                                 <i class="fa-solid fa-square-check"></i> Pilih Paslon MPK #${c.number}
                             </button>
                         </div>
                     </div>
-                `).join('');
-            }
+                `
+          ).join("");
+        }
 
-            openConfirmModal(type, id, name) {
-                this.selectedCandidate = { type, id, name };
-                document.getElementById('modal-type-title').textContent = type === 'osis' ? 'OSIS' : 'MPK';
-                document.getElementById('modal-candidate-name').textContent = name;
-                document.getElementById('modal-confirm').classList.remove('hidden');
-            }
+        openConfirmModal(type, id, name) {
+          this.selectedCandidate = { type, id, name };
+          document.getElementById("modal-type-title").textContent = type === "osis" ? "OSIS" : "MPK";
+          document.getElementById("modal-candidate-name").textContent = name;
+          document.getElementById("modal-confirm").classList.remove("hidden");
+        }
 
-            closeModal() {
-                document.getElementById('modal-confirm').classList.add('hidden');
-                this.selectedCandidate = null;
-            }
+        closeModal() {
+          document.getElementById("modal-confirm").classList.add("hidden");
+          this.selectedCandidate = null;
+        }
 
-            confirmVote() {
-                if (!this.selectedCandidate || !this.currentUser) return;
-                const userKey = `${this.currentUser.nama}_${this.currentUser.kelas}`;
-                const { type, id } = this.selectedCandidate;
+        confirmVote() {
+          if (!this.selectedCandidate || !this.currentUser) return;
+          const userKey = `${this.currentUser.nama}_${this.currentUser.kelas}`;
+          const { type, id } = this.selectedCandidate;
 
-                if (type === 'osis') {
-                    this.votesOsis[id] = (this.votesOsis[id] || 0) + 1;
-                    localStorage.setItem('osis_votes_osis', JSON.stringify(this.votesOsis));
-                    localStorage.setItem(`voted_osis_${userKey}`, 'true');
-                    
-                    this.closeModal();
-                    this.showToast("Suara OSIS Tersimpan", "Silakan lanjutkan ke pemilihan MPK.");
-                    this.renderVotingStep();
-                } else {
-                    this.votesMpk[id] = (this.votesMpk[id] || 0) + 1;
-                    localStorage.setItem('osis_votes_mpk', JSON.stringify(this.votesMpk));
-                    localStorage.setItem(`voted_mpk_${userKey}`, 'true');
-                    
-                    const voterRecord = {
-                        userKey,
-                        nama: this.currentUser.nama,
-                        kelas: this.currentUser.kelas,
-                        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB'
-                    };
-                    this.votedUsers.push(voterRecord);
-                    localStorage.setItem('osis_voted_users', JSON.stringify(this.votedUsers));
+          if (type === "osis") {
+            this.votesOsis[id] = (this.votesOsis[id] || 0) + 1;
+            localStorage.setItem("osis_votes_osis", JSON.stringify(this.votesOsis));
+            localStorage.setItem(`voted_osis_${userKey}`, "true");
 
-                    this.closeModal();
-                    this.showVotedNotice();
-                    this.showToast("Selesai", "Seluruh suara Anda untuk OSIS dan MPK berhasil direkam!");
-                }
-            }
+            this.closeModal();
+            this.showToast("Suara OSIS Tersimpan", "Silakan lanjutkan ke pemilihan MPK.");
+            this.renderVotingStep();
+          } else {
+            this.votesMpk[id] = (this.votesMpk[id] || 0) + 1;
+            localStorage.setItem("osis_votes_mpk", JSON.stringify(this.votesMpk));
+            localStorage.setItem(`voted_mpk_${userKey}`, "true");
 
-            showVotedNotice() {
-                const viewVoting = document.getElementById('view-voting');
-                if (!viewVoting) return;
-                viewVoting.innerHTML = `
+            const voterRecord = {
+              userKey,
+              nama: this.currentUser.nama,
+              kelas: this.currentUser.kelas,
+              time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB",
+            };
+            this.votedUsers.push(voterRecord);
+            localStorage.setItem("osis_voted_users", JSON.stringify(this.votedUsers));
+
+            this.closeModal();
+            this.showVotedNotice();
+            this.showToast("Selesai", "Seluruh suara Anda untuk OSIS dan MPK berhasil direkam!");
+          }
+        }
+
+        showVotedNotice() {
+          const viewVoting = document.getElementById("view-voting");
+          if (!viewVoting) return;
+          viewVoting.innerHTML = `
                     <div class="clay-card rounded-2xl p-10 text-center max-w-xl mx-auto mt-6">
                         <div class="inline-flex p-4 bg-emerald-50 text-emerald-600 rounded-2xl mb-4 text-4xl shadow-inner">
                             <i class="fa-solid fa-circle-check"></i>
                         </div>
                         <h2 class="text-3xl font-extrabold text-slate-900">Terima Kasih Telah Memilih!</h2>
-                        <p class="text-slate-500 text-sm mt-2">Suara atas nama <span class="font-bold text-slate-800">${this.currentUser ? this.currentUser.nama : 'Pemilih'} (${this.currentUser ? this.currentUser.kelas : ''})</span> telah tercatat dengan aman untuk Pemilu OSIS & MPK SMPN 162 Jakarta.</p>
+                        <p class="text-slate-500 text-sm mt-2">Suara atas nama <span class="font-bold text-slate-800">${this.currentUser ? this.currentUser.nama : "Pemilih"} (${
+            this.currentUser ? this.currentUser.kelas : ""
+          })</span> telah tercatat dengan aman untuk Pemilu OSIS & MPK SMPN 162 Jakarta.</p>
                         <div class="mt-6">
                             <button onclick="app.logout()" class="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-xs shadow-md">Keluar Sesi</button>
                         </div>
                     </div>
                 `;
-                router.navigate('voting');
+          router.navigate("voting");
+        }
+
+        renderDashboard() {
+          let totalVoters = this.votedUsers.length;
+          document.getElementById("stat-total-voters").textContent = `${totalVoters} Pemilih`;
+
+          let maxOsisVotes = -1;
+          let leadingOsisName = "Belum Ada Suara";
+          CANDIDATES_OSIS.forEach((c) => {
+            let v = this.votesOsis[c.id] || 0;
+            if (v > maxOsisVotes) {
+              maxOsisVotes = v;
+              leadingOsisName = `OSIS #${c.number} (${v} Suara)`;
             }
+          });
+          document.getElementById("stat-leading-osis").textContent = leadingOsisName;
 
-            renderDashboard() {
-                let totalVoters = this.votedUsers.length;
-                document.getElementById('stat-total-voters').textContent = `${totalVoters} Pemilih`;
+          let maxMpkVotes = -1;
+          let leadingMpkName = "Belum Ada Suara";
+          CANDIDATES_MPK.forEach((c) => {
+            let v = this.votesMpk[c.id] || 0;
+            if (v > maxMpkVotes) {
+              maxMpkVotes = v;
+              leadingMpkName = `MPK #${c.number} (${v} Suara)`;
+            }
+          });
+          document.getElementById("stat-leading-mpk").textContent = leadingMpkName;
 
-                let maxOsisVotes = -1;
-                let leadingOsisName = "Belum Ada Suara";
-                CANDIDATES_OSIS.forEach(c => {
-                    let v = this.votesOsis[c.id] || 0;
-                    if (v > maxOsisVotes) {
-                        maxOsisVotes = v;
-                        leadingOsisName = `OSIS #${c.number} (${v} Suara)`;
-                    }
-                });
-                document.getElementById('stat-leading-osis').textContent = leadingOsisName;
+          let totalVotesOsis = Object.values(this.votesOsis).reduce((a, b) => a + b, 0);
 
-                let maxMpkVotes = -1;
-                let leadingMpkName = "Belum Ada Suara";
-                CANDIDATES_MPK.forEach(c => {
-                    let v = this.votesMpk[c.id] || 0;
-                    if (v > maxMpkVotes) {
-                        maxMpkVotes = v;
-                        leadingMpkName = `MPK #${c.number} (${v} Suara)`;
-                    }
-                });
-                document.getElementById('stat-leading-mpk').textContent = leadingMpkName;
-
-                let totalVotesOsis = Object.values(this.votesOsis).reduce((a, b) => a + b, 0);
-                
-                const listOsisEl = document.getElementById('dashboard-osis-list');
-                listOsisEl.innerHTML = CANDIDATES_OSIS.map(c => {
-                    let v = this.votesOsis[c.id] || 0;
-                    let pct = totalVotesOsis > 0 ? ((v / totalVotesOsis) * 100).toFixed(1) : 0;
-                    return `
+          const listOsisEl = document.getElementById("dashboard-osis-list");
+          listOsisEl.innerHTML = CANDIDATES_OSIS.map((c) => {
+            let v = this.votesOsis[c.id] || 0;
+            let pct = totalVotesOsis > 0 ? ((v / totalVotesOsis) * 100).toFixed(1) : 0;
+            return `
                         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                             <div class="flex justify-between text-xs font-bold text-slate-800 mb-1.5">
                                 <span>OSIS #${c.number}: ${c.name}</span>
@@ -863,13 +956,13 @@
                             </div>
                         </div>
                     `;
-                }).join('');
+          }).join("");
 
-                const tableOsisEl = document.getElementById('table-rekap-osis');
-                tableOsisEl.innerHTML = CANDIDATES_OSIS.map(c => {
-                    let v = this.votesOsis[c.id] || 0;
-                    let pct = totalVotesOsis > 0 ? ((v / totalVotesOsis) * 100).toFixed(1) : 0;
-                    return `
+          const tableOsisEl = document.getElementById("table-rekap-osis");
+          tableOsisEl.innerHTML = CANDIDATES_OSIS.map((c) => {
+            let v = this.votesOsis[c.id] || 0;
+            let pct = totalVotesOsis > 0 ? ((v / totalVotesOsis) * 100).toFixed(1) : 0;
+            return `
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="p-3 font-bold text-slate-800">OSIS #${c.number}</td>
                             <td class="p-3">${c.name}</td>
@@ -877,15 +970,15 @@
                             <td class="p-3 text-right font-bold">${pct}%</td>
                         </tr>
                     `;
-                }).join('');
+          }).join("");
 
-                let totalVotesMpk = Object.values(this.votesMpk).reduce((a, b) => a + b, 0);
-                
-                const listMpkEl = document.getElementById('dashboard-mpk-list');
-                listMpkEl.innerHTML = CANDIDATES_MPK.map(c => {
-                    let v = this.votesMpk[c.id] || 0;
-                    let pct = totalVotesMpk > 0 ? ((v / totalVotesMpk) * 100).toFixed(1) : 0;
-                    return `
+          let totalVotesMpk = Object.values(this.votesMpk).reduce((a, b) => a + b, 0);
+
+          const listMpkEl = document.getElementById("dashboard-mpk-list");
+          listMpkEl.innerHTML = CANDIDATES_MPK.map((c) => {
+            let v = this.votesMpk[c.id] || 0;
+            let pct = totalVotesMpk > 0 ? ((v / totalVotesMpk) * 100).toFixed(1) : 0;
+            return `
                         <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                             <div class="flex justify-between text-xs font-bold text-slate-800 mb-1.5">
                                 <span>MPK #${c.number}: ${c.name}</span>
@@ -896,13 +989,13 @@
                             </div>
                         </div>
                     `;
-                }).join('');
+          }).join("");
 
-                const tableMpkEl = document.getElementById('table-rekap-mpk');
-                tableMpkEl.innerHTML = CANDIDATES_MPK.map(c => {
-                    let v = this.votesMpk[c.id] || 0;
-                    let pct = totalVotesMpk > 0 ? ((v / totalVotesMpk) * 100).toFixed(1) : 0;
-                    return `
+          const tableMpkEl = document.getElementById("table-rekap-mpk");
+          tableMpkEl.innerHTML = CANDIDATES_MPK.map((c) => {
+            let v = this.votesMpk[c.id] || 0;
+            let pct = totalVotesMpk > 0 ? ((v / totalVotesMpk) * 100).toFixed(1) : 0;
+            return `
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="p-3 font-bold text-slate-800">MPK #${c.number}</td>
                             <td class="p-3">${c.name}</td>
@@ -910,201 +1003,207 @@
                             <td class="p-3 text-right font-bold">${pct}%</td>
                         </tr>
                     `;
-                }).join('');
+          }).join("");
 
-                this.renderVotersTable();
+          this.renderVotersTable();
 
-                const ctxOsis = document.getElementById('scoreChartOsis').getContext('2d');
-                const labelsOsis = CANDIDATES_OSIS.map(c => `OSIS #${c.number}`);
-                const dataOsis = CANDIDATES_OSIS.map(c => this.votesOsis[c.id] || 0);
-                const colorsOsis = CANDIDATES_OSIS.map(c => c.color);
+          const ctxOsis = document.getElementById("scoreChartOsis").getContext("2d");
+          const labelsOsis = CANDIDATES_OSIS.map((c) => `OSIS #${c.number}`);
+          const dataOsis = CANDIDATES_OSIS.map((c) => this.votesOsis[c.id] || 0);
+          const colorsOsis = CANDIDATES_OSIS.map((c) => c.color);
 
-                if (this.chartOsisInstance) {
-                    this.chartOsisInstance.data.datasets[0].data = dataOsis;
-                    this.chartOsisInstance.update();
-                } else {
-                    this.chartOsisInstance = new Chart(ctxOsis, {
-                        type: 'bar',
-                        data: {
-                            labels: labelsOsis,
-                            datasets: [{
-                                label: 'Suara OSIS',
-                                data: dataOsis,
-                                backgroundColor: colorsOsis,
-                                borderRadius: 8,
-                                borderSkipped: false,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                                x: { grid: { display: false } }
-                            }
-                        }
-                    });
-                }
+          if (this.chartOsisInstance) {
+            this.chartOsisInstance.data.datasets[0].data = dataOsis;
+            this.chartOsisInstance.update();
+          } else {
+            this.chartOsisInstance = new Chart(ctxOsis, {
+              type: "bar",
+              data: {
+                labels: labelsOsis,
+                datasets: [
+                  {
+                    label: "Suara OSIS",
+                    data: dataOsis,
+                    backgroundColor: colorsOsis,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                  x: { grid: { display: false } },
+                },
+              },
+            });
+          }
 
-                const ctxMpk = document.getElementById('scoreChartMpk').getContext('2d');
-                const labelsMpk = CANDIDATES_MPK.map(c => `MPK #${c.number}`);
-                const dataMpk = CANDIDATES_MPK.map(c => this.votesMpk[c.id] || 0);
-                const colorsMpk = CANDIDATES_MPK.map(c => c.color);
+          const ctxMpk = document.getElementById("scoreChartMpk").getContext("2d");
+          const labelsMpk = CANDIDATES_MPK.map((c) => `MPK #${c.number}`);
+          const dataMpk = CANDIDATES_MPK.map((c) => this.votesMpk[c.id] || 0);
+          const colorsMpk = CANDIDATES_MPK.map((c) => c.color);
 
-                if (this.chartMpkInstance) {
-                    this.chartMpkInstance.data.datasets[0].data = dataMpk;
-                    this.chartMpkInstance.update();
-                } else {
-                    this.chartMpkInstance = new Chart(ctxMpk, {
-                        type: 'bar',
-                        data: {
-                            labels: labelsMpk,
-                            datasets: [{
-                                label: 'Suara MPK',
-                                data: dataMpk,
-                                backgroundColor: colorsMpk,
-                                borderRadius: 8,
-                                borderSkipped: false,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                                x: { grid: { display: false } }
-                            }
-                        }
-                    });
-                }
+          if (this.chartMpkInstance) {
+            this.chartMpkInstance.data.datasets[0].data = dataMpk;
+            this.chartMpkInstance.update();
+          } else {
+            this.chartMpkInstance = new Chart(ctxMpk, {
+              type: "bar",
+              data: {
+                labels: labelsMpk,
+                datasets: [
+                  {
+                    label: "Suara MPK",
+                    data: dataMpk,
+                    backgroundColor: colorsMpk,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                  x: { grid: { display: false } },
+                },
+              },
+            });
+          }
+        }
+
+        renderVotersTable() {
+          const filterKelas = document.getElementById("filter-kelas").value;
+          const tbody = document.getElementById("table-voters-list");
+          if (!tbody) return;
+
+          let formattedVoters = this.votedUsers.map((u, originalIndex) => {
+            if (typeof u === "string") {
+              const parts = u.split("_");
+              return { index: originalIndex, userKey: u, nama: parts[0] || "Pemilih", kelas: parts[1] || "-", time: "-" };
             }
+            return { index: originalIndex, ...u };
+          });
 
-            renderVotersTable() {
-                const filterKelas = document.getElementById('filter-kelas').value;
-                const tbody = document.getElementById('table-voters-list');
-                if (!tbody) return;
+          let filtered = formattedVoters;
+          if (filterKelas === "GURU") {
+            filtered = formattedVoters.filter((v) => v.kelas && v.kelas.startsWith("GURU"));
+          } else if (filterKelas !== "ALL") {
+            filtered = formattedVoters.filter((v) => v.kelas === filterKelas);
+          }
 
-                let formattedVoters = this.votedUsers.map((u, originalIndex) => {
-                    if (typeof u === 'string') {
-                        const parts = u.split('_');
-                        return { index: originalIndex, userKey: u, nama: parts[0] || 'Pemilih', kelas: parts[1] || '-', time: '-' };
-                    }
-                    return { index: originalIndex, ...u };
-                });
+          if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Belum ada data pemilih untuk filter ini.</td></tr>`;
+            return;
+          }
 
-                let filtered = formattedVoters;
-                if (filterKelas === 'GURU') {
-                    filtered = formattedVoters.filter(v => v.kelas && v.kelas.startsWith('GURU'));
-                } else if (filterKelas !== 'ALL') {
-                    filtered = formattedVoters.filter(v => v.kelas === filterKelas);
-                }
-
-                if (filtered.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Belum ada data pemilih untuk filter ini.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = filtered.map((v, index) => `
+          tbody.innerHTML = filtered
+            .map(
+              (v, index) => `
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="p-3 text-slate-500 font-bold">${index + 1}</td>
                         <td class="p-3 font-semibold text-slate-800">${v.nama}</td>
-                        <td class="p-3"><span class="px-2.5 py-1 ${v.kelas && v.kelas.startsWith('GURU') ? 'bg-amber-50 text-amber-700' : 'bg-purple-50 text-purple-700'} font-bold rounded-lg">${v.kelas || '-'}</span></td>
-                        <td class="p-3 text-slate-500">${v.time || '-'}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 ${v.kelas && v.kelas.startsWith("GURU") ? "bg-amber-50 text-amber-700" : "bg-purple-50 text-purple-700"} font-bold rounded-lg">${
+                v.kelas || "-"
+              }</span></td>
+                        <td class="p-3 text-slate-500">${v.time || "-"}</td>
                         <td class="p-3 text-center">
-                            <button onclick="app.deleteVoter(${v.index})" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-all border border-red-200" title="Hapus Data Pemilih">
+                            <button onclick="app.deleteVoter(${
+                              v.index
+                            })" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-all border border-red-200" title="Hapus Data Pemilih">
                                 <i class="fa-solid fa-trash-can"></i> Hapus
                             </button>
                         </td>
                     </tr>
-                `).join('');
-            }
-
-            deleteVoter(index) {
-                const voter = this.votedUsers[index];
-                if (!voter) return;
-
-                const voterName = typeof voter === 'string' ? voter.split('_')[0] : voter.nama;
-                const userKey = typeof voter === 'string' ? voter : voter.userKey;
-
-                if (confirm(`Apakah Anda yakin ingin menghapus data pemilih atas nama "${voterName}"? Pemilih bersangkutan akan dapat melakukan pemilihan ulang.`)) {
-                    if (userKey) {
-                        localStorage.removeItem(`voted_osis_${userKey}`);
-                        localStorage.removeItem(`voted_mpk_${userKey}`);
-                    }
-
-                    this.votedUsers.splice(index, 1);
-                    localStorage.setItem('osis_voted_users', JSON.stringify(this.votedUsers));
-
-                    this.renderDashboard();
-                    this.showToast("Berhasil Dihapus", `Data pemilih ${voterName} telah dihapus.`);
-                }
-            }
-
-            exportData() {
-                const data = {
-                    timestamp: new Date().toISOString(),
-                    totalVoters: this.votedUsers.length,
-                    resultsOsis: CANDIDATES_OSIS.map(c => ({ number: c.number, name: c.name, votes: this.votesOsis[c.id] || 0 })),
-                    resultsMpk: CANDIDATES_MPK.map(c => ({ number: c.number, name: c.name, votes: this.votesMpk[c.id] || 0 })),
-                    votersList: this.votedUsers
-                };
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Laporan_Pilketos_SMPN162_${new Date().toISOString().slice(0,10)}.json`;
-                a.click();
-                this.showToast("Export Berhasil", "Laporan rekapitulasi berhasil diunduh.");
-            }
-
-            resetElectionData() {
-                if (confirm("PERINGATAN: Apakah Anda yakin ingin mereset seluruh data suara dan pemilih?")) {
-                    localStorage.clear();
-                    this.votesOsis = {};
-                    this.votesMpk = {};
-                    this.votedUsers = [];
-                    this.currentUser = null;
-                    this.updateNavBadge();
-                    router.navigate('home');
-                    this.showToast("Reset Berhasil", "Semua data pemilu dikosongkan.");
-                }
-            }
-
-            showToast(title, msg) {
-                const toast = document.getElementById('toast-success');
-                if (!toast) return;
-                document.getElementById('toast-title').textContent = title;
-                document.getElementById('toast-msg').textContent = msg;
-                
-                toast.classList.remove('translate-y-24', 'opacity-0');
-                setTimeout(() => {
-                    toast.classList.add('translate-y-24', 'opacity-0');
-                }, 3500);
-            }
+                `
+            )
+            .join("");
         }
 
-        let app;
-        window.onload = function() {
-            app = new EvotingApp();
-        };
-        // Bagian paling bawah index.html 
-        // --- 1. INISIALISASI SUPABASE DI SINI ---
-        const SUPABASE_URL = "https://hfezgcqreylagsinddmp.supabase.co"; // Gantilah dengan Project URL Supabase Anda
-        const SUPABASE_ANON_KEY = "sb_publishable_J6bGT3E8DjfW1VAEGxDYCQ_8W5o04pR"; // Gantilah dengan key anon public Supabase Anda
+        deleteVoter(index) {
+          const voter = this.votedUsers[index];
+          if (!voter) return;
 
-        // Inisialisasi client Supabase
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          const voterName = typeof voter === "string" ? voter.split("_")[0] : voter.nama;
+          const userKey = typeof voter === "string" ? voter : voter.userKey;
 
-        // --- 2. KODE LAMA ANDA ---
-        const API_URL = "https://script.google.com/macros/s/.../exec";
-        
-        
-        // ... kode class EvotingApp dan sisanya ...
+          if (confirm(`Apakah Anda yakin ingin menghapus data pemilih atas nama "${voterName}"? Pemilih bersangkutan akan dapat melakukan pemilihan ulang.`)) {
+            if (userKey) {
+              localStorage.removeItem(`voted_osis_${userKey}`);
+              localStorage.removeItem(`voted_mpk_${userKey}`);
+            }
+
+            this.votedUsers.splice(index, 1);
+            localStorage.setItem("osis_voted_users", JSON.stringify(this.votedUsers));
+
+            this.renderDashboard();
+            this.showToast("Berhasil Dihapus", `Data pemilih ${voterName} telah dihapus.`);
+          }
+        }
+
+        exportData() {
+          const data = {
+            timestamp: new Date().toISOString(),
+            totalVoters: this.votedUsers.length,
+            resultsOsis: CANDIDATES_OSIS.map((c) => ({ number: c.number, name: c.name, votes: this.votesOsis[c.id] || 0 })),
+            resultsMpk: CANDIDATES_MPK.map((c) => ({ number: c.number, name: c.name, votes: this.votesMpk[c.id] || 0 })),
+            votersList: this.votedUsers,
+          };
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `Laporan_Pilketos_SMPN162_${new Date().toISOString().slice(0, 10)}.json`;
+          a.click();
+          this.showToast("Export Berhasil", "Laporan rekapitulasi berhasil diunduh.");
+        }
+
+        resetElectionData() {
+          if (confirm("PERINGATAN: Apakah Anda yakin ingin mereset seluruh data suara dan pemilih?")) {
+            localStorage.clear();
+            this.votesOsis = {};
+            this.votesMpk = {};
+            this.votedUsers = [];
+            this.currentUser = null;
+            this.updateNavBadge();
+            router.navigate("home");
+            this.showToast("Reset Berhasil", "Semua data pemilu dikosongkan.");
+          }
+        }
+
+        showToast(title, msg) {
+          const toast = document.getElementById("toast-success");
+          if (!toast) return;
+          document.getElementById("toast-title").textContent = title;
+          document.getElementById("toast-msg").textContent = msg;
+
+          toast.classList.remove("translate-y-24", "opacity-0");
+          setTimeout(() => {
+            toast.classList.add("translate-y-24", "opacity-0");
+          }, 3500);
+        }
+      }
+
+      let app;
+      window.onload = function () {
+        app = new EvotingApp();
+      };
+
+      // --- 1. INISIALISASI SUPABASE DI SINI ---
+      const SUPABASE_URL = "https://hfezgcqreylagsinddmp.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_J6bGT3E8DjfW1VAEGxDYCQ_8W5o04pR";
+
+      // Inisialisasi client Supabase
+      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // --- 2. KODE KONEKSI API ---
+      const API_URL = "https://script.google.com/macros/s/.../exec";
     </script>
-</body>
-</html>
-    </script>
-</body>
+  </body>
 </html>
