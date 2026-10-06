@@ -389,11 +389,27 @@ const app = {
           <td class="p-3 font-semibold text-slate-800">${v.name}</td>
           <td class="p-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-xs">${v.kelas}</span></td>
           <td class="p-3 text-slate-500">${timeStr}</td>
-          <td class="p-3 text-center">
-            <span class="text-emerald-600 font-bold"><i class="fa-solid fa-check-circle"></i> Selesai</span>
+          <td class="p-3 text-center flex items-center justify-center gap-2">
+            <span class="text-emerald-600 font-bold text-xs"><i class="fa-solid fa-check-circle"></i> Selesai</span>
+            <button onclick="app.deleteVoter(${v.id})" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-all" title="Hapus Status Pemilih">
+              <i class="fa-solid fa-trash"></i> Hapus
+            </button>
           </td>
         </tr>`;
     });
+  },
+
+  deleteVoter: async function (voterId) {
+    if (!confirm("Apakah Anda yakin ingin menghapus data pemilih ini? Status pemilihan siswa/guru tersebut akan direset.")) return;
+
+    const { error } = await _supabase.from("voters").delete().eq("id", voterId);
+    if (error) {
+      this.showToast("Error", "Gagal menghapus data pemilih.", "error");
+      return;
+    }
+
+    this.showToast("Sukses", "Data pemilih berhasil dihapus/direset.");
+    this.loadDashboardData();
   },
 
   exportData: async function () {
