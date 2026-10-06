@@ -1,86 +1,56 @@
-let CANDIDATES_OSIS = [];
-let CANDIDATES_MPK = [];
+// --- INISIALISASI SUPABASE ---
+// Ganti dengan URL dan Anon Key project Supabase Anda
+const SUPABASE_URL = "https://hfezgcqreylagsinddmp.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_J6bGT3E8DjfW1VAEGxDYCQ_8W5o04pR";
 
+const { createClient } = supabase;
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// --- ROUTER & APP STATE ---
 const router = {
   navigate: function (viewId) {
     document.querySelectorAll(".view-section").forEach((el) => el.classList.add("hidden"));
     const target = document.getElementById(`view-${viewId}`);
-    if (target) target.classList.remove("hidden");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    if (viewId === "dashboard") {
-      app.renderDashboard();
-    } else if (viewId === "voting") {
-      app.renderVotingStep();
+    if (target) {
+      target.classList.remove("hidden");
+      window.scrollTo(0, 0);
+      if (viewId === "dashboard") {
+        app.loadDashboardData();
+      }
+      if (viewId === "voting") {
+        app.loadCandidates();
+      }
     }
   },
 };
 
-class EvotingApp {
-  constructor() {
-    try {
-      const savedUser = localStorage.getItem("osis_current_user");
-      this.currentUser = savedUser && savedUser !== "undefined" ? JSON.parse(savedUser) : null;
-    } catch (e) {
-      this.currentUser = null;
-    }
+const app = {
+  currentUser: null,
+  loginRole: "siswa",
+  selectedVote: { type: null, candidateId: null, candidateName: null },
+  charts: { osis: null, mpk: null },
 
-    this.votesOsis = {};
-    this.votesMpk = {};
-    this.votedUsers = [];
-    this.selectedCandidate = null;
-    this.chartOsisInstance = null;
-    this.chartMpkInstance = null;
-    this.tempOsisVoteId = null;
-
-    this.init();
-  }
-
-  async init() {
-    await this.fetchCandidates();
-    await this.fetchDashboardData();
-
-    if (this.currentUser && this.currentUser.nama && this.currentUser.kelas) {
-      const userKey = `${this.currentUser.nama}_${this.currentUser.kelas}`;
-      if (this.votedUsers.some((u) => u.userKey === userKey)) {
-        this.showVotedNotice();
-      } else {
-        router.navigate("voting");
-      }
+  init: async function () {
+    // Cek sesi lokal (jika ada)
+    const savedUser = localStorage.getItem("evoting_user");
+    if (savedUser) {
+      this.currentUser = JSON.parse(savedUser);
       this.updateNavBadge();
-    } else {
-      router.navigate("home");
     }
-  }
 
-  async fetchCandidates() {
-    try {
-      const response = await fetch("api.php?action=get_candidates");
-      const result = await response.json();
-      if (result.status === "success") {
-        CANDIDATES_OSIS = result.data.filter((c) => c.category === "osis");
-        CANDIDATES_MPK = result.data.filter((c) => c.category === "mpk");
-      }
-    } catch (e) {
-      console.error("Gagal memuat kandidat dari MySQL:", e);
-    }
-  }
+    // Setup Realtime listener untuk update live skor otomatis
+    _supabase
+      .channel("public:candidates")
+      .on("postgres_changes", { event: "*", schema: "public", table: "candidates" }, () => {
+        if (!document.getElementById("view-dashboard").classList.contains("hidden")) {
+          this.loadDashboardData();
+        }
+      })
+      .subscribe();
+  },
 
-  async fetchDashboardData() {
-    try {
-      const response = await fetch("api.php?action=get_dashboard_data");
-      const result = await response.json();
-      if (result.status === "success") {
-        this.votesOsis = result.votes_osis || {};
-        this.votesMpk = result.votes_mpk || {};
-        this.votedUsers = result.voters_list || [];
-      }
-    } catch (e) {
-      console.error("Gagal memuat data dashboard:", e);
-    }
-  }
-
-  switchLoginRole(role) {
+  switchLoginRole: function (role) {
+    this.loginRole = role;
     const btnSiswa = document.getElementById("tab-btn-siswa");
     const btnGuru = document.getElementById("tab-btn-guru");
     const formSiswa = document.getElementById("form-login-siswa");
@@ -98,539 +68,344 @@ class EvotingApp {
       btnSiswa.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
       formGuru.classList.remove("hidden");
       formSiswa.classList.add("hidden");
-      desc.textContent = "Silakan masukkan Nama Lengkap & Gelar serta NIP/Kode Guru Anda.";
+      desc.textContent = "Silakan masukkan Nama dan NIP / Kode Guru Anda.";
     }
-  }
+  },
 
-  updateNavBadge() {
+  handleLogin: async function (e, role) {
+    e.preventDefault();
+    let name, kelas;
+
+    if (role === "siswa") {
+      name = document.getElementById("input-nama-siswa").value.trim();
+      kelas = document.getElementById("input-kelas-siswa").value;
+    } else {
+      name = document.getElementById("input-nama-guru").value.trim();
+      let nip = document.getElementById("input-nip-guru").value.trim();
+      kelas = "GURU";
+      name = `${name} (${nip})`;
+    }
+
+    // Cek apakah pemilih sudah pernah memilih di database Supabase
+    const { data: existing, error } = await _supabase.from("voters").select("*").eq("name", name).eq("kelas", kelas);
+
+    if (error) {
+      this.showToast("Error", "Gagal memeriksa data pemilih.", "error");
+      return;
+    }
+
+    if (existing && existing.length > 0) {
+      this.showToast("Peringatan", `Pemilih atas nama ${name} sudah melakukan pemilihan sebelumnya!`, "error");
+      return;
+    }
+
+    this.currentUser = { name, kelas };
+    localStorage.setItem("evoting_user", JSON.stringify(this.currentUser));
+    this.updateNavBadge();
+    this.showToast("Berhasil Login", `Selamat datang, ${name}! Silakan lakukan pemilihan.`);
+    router.navigate("voting");
+  },
+
+  updateNavBadge: function () {
     const badge = document.getElementById("nav-user-badge");
-    const disp = document.getElementById("nav-user-display");
-    if (this.currentUser && this.currentUser.nama) {
+    const display = document.getElementById("nav-user-display");
+    if (this.currentUser) {
+      display.textContent = `${this.currentUser.name} (${this.currentUser.kelas})`;
       badge.classList.remove("hidden");
       badge.classList.add("flex");
-      disp.textContent = `${this.currentUser.nama} (${this.currentUser.kelas})`;
     } else {
       badge.classList.add("hidden");
       badge.classList.remove("flex");
     }
-  }
+  },
 
-  async handleLogin(e, role) {
-    e.preventDefault();
-    let nama, kelas;
-
-    if (role === "siswa") {
-      const namaEl = document.getElementById("input-nama-siswa");
-      const kelasEl = document.getElementById("input-kelas-siswa");
-      if (!namaEl || !kelasEl) return;
-      nama = namaEl.value.trim();
-      kelas = kelasEl.value;
-      namaEl.value = "";
-      kelasEl.value = "";
-    } else {
-      const namaEl = document.getElementById("input-nama-guru");
-      const nipEl = document.getElementById("input-nip-guru");
-      if (!namaEl || !nipEl) return;
-      nama = namaEl.value.trim();
-      kelas = `GURU (${nipEl.value.trim()})`;
-      namaEl.value = "";
-      nipEl.value = "";
-    }
-
-    if (!nama || !kelas) return;
-
-    this.currentUser = { nama, kelas };
-    localStorage.setItem("osis_current_user", JSON.stringify(this.currentUser));
-    this.updateNavBadge();
-
-    await this.fetchDashboardData();
-    const userKey = `${nama}_${kelas}`;
-    if (this.votedUsers.some((u) => u.userKey === userKey)) {
-      this.showVotedNotice();
-    } else {
-      router.navigate("voting");
-      this.showToast("Login Berhasil", `Selamat datang, ${nama} (${kelas}). Silakan lakukan pemilihan.`);
-    }
-  }
-
-  handleAdminLogin(e) {
-    e.preventDefault();
-    const pinEl = document.getElementById("input-admin-pin");
-    if (!pinEl) return;
-    const pin = pinEl.value.trim();
-    const errBox = document.getElementById("admin-login-error");
-
-    if (pin === "admin123" || pin === "guru123") {
-      if (errBox) errBox.classList.add("hidden");
-      pinEl.value = "";
-      router.navigate("dashboard");
-      this.showToast("Akses Diberikan", "Berhasil masuk ke Dashboard Live Skor Admin & Guru.");
-    } else {
-      if (errBox) errBox.classList.remove("hidden");
-    }
-  }
-
-  logout() {
+  logout: function () {
+    localStorage.removeItem("evoting_user");
     this.currentUser = null;
-    localStorage.removeItem("osis_current_user");
     this.updateNavBadge();
     router.navigate("home");
-    this.showToast("Keluar", "Sesi pemilih telah diakhiri.");
-  }
+    this.showToast("Keluar", "Sesi Anda telah diakhiri.");
+  },
 
-  async renderVotingStep() {
-    await this.fetchDashboardData();
-    const osisContainer = document.getElementById("step-osis-container");
-    const mpkContainer = document.getElementById("step-mpk-container");
-    if (!osisContainer || !mpkContainer) return;
-
-    const userKey = this.currentUser ? `${this.currentUser.nama}_${this.currentUser.kelas}` : "";
-    const hasVoted = this.votedUsers.some((u) => u.userKey === userKey);
-
-    if (!hasVoted) {
-      osisContainer.classList.remove("hidden");
-      mpkContainer.classList.add("hidden");
-      this.renderOsisGrid();
-    } else {
-      this.showVotedNotice();
-    }
-  }
-
-  renderOsisGrid() {
-    const grid = document.getElementById("candidates-osis-grid");
-    if (!grid) return;
-    grid.innerHTML = CANDIDATES_OSIS.map(
-      (c) => `
-        <div class="candidate-card clay-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all border border-slate-200">
-            <div>
-                <div class="relative h-48 bg-slate-100 overflow-hidden">
-                    <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=OSIS+${c.number}'">
-                    <div class="absolute top-4 left-4 bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-sm shadow-md">
-                        PASLON OSIS #${c.number}
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-lg font-extrabold text-slate-900 leading-snug">${c.name}</h3>
-                    <p class="text-xs font-semibold text-brand-600 mt-1 mb-3 italic">"${c.tagline}"</p>
-                    <div class="space-y-3 text-xs">
-                        <div>
-                            <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Visi Utama</span>
-                            <p class="text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 leading-relaxed">${c.vision}</p>
-                        </div>
-                        <div>
-                            <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Misi</span>
-                            <ul class="space-y-1 text-slate-600 pl-4 list-disc">
-                                ${Array.isArray(c.mission) ? c.mission.map((m) => `<li>${m}</li>`).join("") : ""}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6 pt-0">
-                <button onclick="app.openConfirmModal('osis', '${c.id}', '${c.name}')" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
-                    <i class="fa-solid fa-square-check"></i> Pilih Paslon OSIS #${c.number}
-                </button>
-            </div>
-        </div>
-      `,
-    ).join("");
-  }
-
-  renderMpkGrid() {
-    const grid = document.getElementById("candidates-mpk-grid");
-    if (!grid) return;
-    grid.innerHTML = CANDIDATES_MPK.map(
-      (c) => `
-        <div class="candidate-card clay-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all border border-slate-200">
-            <div>
-                <div class="relative h-48 bg-slate-100 overflow-hidden">
-                    <img src="${c.avatar}" alt="${c.name}" class="w-full h-full object-cover object-center" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=MPK+${c.number}'">
-                    <div class="absolute top-4 left-4 bg-blue-700 text-white px-3.5 py-1.5 rounded-xl font-extrabold text-sm shadow-md">
-                        PASLON MPK #${c.number}
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-lg font-extrabold text-slate-900 leading-snug">${c.name}</h3>
-                    <p class="text-xs font-semibold text-blue-600 mt-1 mb-3 italic">"${c.tagline}"</p>
-                    <div class="space-y-3 text-xs">
-                        <div>
-                            <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Visi Utama</span>
-                            <p class="text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 leading-relaxed">${c.vision}</p>
-                        </div>
-                        <div>
-                            <span class="font-bold text-slate-700 uppercase tracking-wider block mb-1">Misi</span>
-                            <ul class="space-y-1 text-slate-600 pl-4 list-disc">
-                                ${Array.isArray(c.mission) ? c.mission.map((m) => `<li>${m}</li>`).join("") : ""}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6 pt-0">
-                <button onclick="app.openConfirmModal('mpk', '${c.id}', '${c.name}')" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
-                    <i class="fa-solid fa-square-check"></i> Pilih Paslon MPK #${c.number}
-                </button>
-            </div>
-        </div>
-      `,
-    ).join("");
-  }
-
-  openConfirmModal(type, id, name) {
-    this.selectedCandidate = { type, id, name };
-    document.getElementById("modal-type-title").textContent = type === "osis" ? "OSIS" : "MPK";
-    document.getElementById("modal-candidate-name").textContent = name;
-    document.getElementById("modal-confirm").classList.remove("hidden");
-  }
-
-  closeModal() {
-    document.getElementById("modal-confirm").classList.add("hidden");
-    this.selectedCandidate = null;
-  }
-
-  async confirmVote() {
-    if (!this.selectedCandidate || !this.currentUser) return;
-    const { type, id } = this.selectedCandidate;
-
-    if (type === "osis") {
-      this.tempOsisVoteId = id;
-      this.closeModal();
-      const osisContainer = document.getElementById("step-osis-container");
-      const mpkContainer = document.getElementById("step-mpk-container");
-      osisContainer.classList.add("hidden");
-      mpkContainer.classList.remove("hidden");
-      this.renderMpkGrid();
-      this.showToast("Suara OSIS Tersimpan", "Silakan pilih paslon MPK.");
-    } else {
-      const payload = {
-        nama: this.currentUser.nama,
-        kelas: this.currentUser.kelas,
-        osis_id: this.tempOsisVoteId,
-        mpk_id: id,
-      };
-
-      try {
-        const response = await fetch("api.php?action=submit_vote", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const result = await response.json();
-
-        if (result.status === "success") {
-          this.closeModal();
-          await this.fetchDashboardData();
-          this.showVotedNotice();
-          this.showToast("Selesai", "Seluruh suara Anda untuk OSIS dan MPK berhasil direkam ke Database MySQL!");
-        } else {
-          alert(result.message);
-          this.closeModal();
-        }
-      } catch (e) {
-        alert("Terjadi kesalahan jaringan saat mengirim suara.");
-        this.closeModal();
-      }
-    }
-  }
-
-  showVotedNotice() {
-    const viewVoting = document.getElementById("view-voting");
-    if (!viewVoting) return;
-    viewVoting.innerHTML = `
-        <div class="clay-card rounded-2xl p-10 text-center max-w-xl mx-auto mt-6">
-            <div class="inline-flex p-4 bg-emerald-50 text-emerald-600 rounded-2xl mb-4 text-4xl shadow-inner">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-            <h2 class="text-3xl font-extrabold text-slate-900">Terima Kasih Telah Memilih!</h2>
-            <p class="text-slate-500 text-sm mt-2">Suara atas nama <span class="font-bold text-slate-800">${this.currentUser ? this.currentUser.nama : "Pemilih"} (${this.currentUser ? this.currentUser.kelas : ""})</span> telah tercatat dengan aman di database MySQL SMPN 162 Jakarta.</p>
-            <div class="mt-6">
-                <button onclick="app.logout()" class="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-xs shadow-md">Keluar Sesi</button>
-            </div>
-        </div>
-    `;
-    router.navigate("voting");
-  }
-
-  async renderDashboard() {
-    await this.fetchDashboardData();
-
-    let totalVoters = this.votedUsers.length;
-    document.getElementById("stat-total-voters").textContent = `${totalVoters} Pemilih`;
-
-    let maxOsisVotes = -1;
-    let leadingOsisName = "Belum Ada Suara";
-    CANDIDATES_OSIS.forEach((c) => {
-      let v = this.votesOsis[c.id] || 0;
-      if (v > maxOsisVotes) {
-        maxOsisVotes = v;
-        leadingOsisName = `OSIS #${c.number} (${v} Suara)`;
-      }
-    });
-    document.getElementById("stat-leading-osis").textContent = leadingOsisName;
-
-    let maxMpkVotes = -1;
-    let leadingMpkName = "Belum Ada Suara";
-    CANDIDATES_MPK.forEach((c) => {
-      let v = this.votesMpk[c.id] || 0;
-      if (v > maxMpkVotes) {
-        maxMpkVotes = v;
-        leadingMpkName = `MPK #${c.number} (${v} Suara)`;
-      }
-    });
-    document.getElementById("stat-leading-mpk").textContent = leadingMpkName;
-
-    let totalVotesOsis = Object.values(this.votesOsis).reduce((a, b) => a + b, 0);
-
-    const listOsisEl = document.getElementById("dashboard-osis-list");
-    listOsisEl.innerHTML = CANDIDATES_OSIS.map((c) => {
-      let v = this.votesOsis[c.id] || 0;
-      let pct = totalVotesOsis > 0 ? ((v / totalVotesOsis) * 100).toFixed(1) : 0;
-      return `
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                <div class="flex justify-between text-xs font-bold text-slate-800 mb-1.5">
-                    <span>OSIS #${c.number}: ${c.name}</span>
-                    <span>${v} Suara (${pct}%)</span>
-                </div>
-                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${c.color}"></div>
-                </div>
-            </div>
-        `;
-    }).join("");
-
-    const tableOsisEl = document.getElementById("table-rekap-osis");
-    tableOsisEl.innerHTML = CANDIDATES_OSIS.map((c) => {
-      let v = this.votesOsis[c.id] || 0;
-      let pct = totalVotesOsis > 0 ? ((v / totalVotesOsis) * 100).toFixed(1) : 0;
-      return `
-            <tr class="hover:bg-slate-50 transition-colors">
-                <td class="p-3 font-bold text-slate-800">OSIS #${c.number}</td>
-                <td class="p-3">${c.name}</td>
-                <td class="p-3 text-center font-bold text-emerald-600">${v} Suara</td>
-                <td class="p-3 text-right font-bold">${pct}%</td>
-            </tr>
-        `;
-    }).join("");
-
-    let totalVotesMpk = Object.values(this.votesMpk).reduce((a, b) => a + b, 0);
-
-    const listMpkEl = document.getElementById("dashboard-mpk-list");
-    listMpkEl.innerHTML = CANDIDATES_MPK.map((c) => {
-      let v = this.votesMpk[c.id] || 0;
-      let pct = totalVotesMpk > 0 ? ((v / totalVotesMpk) * 100).toFixed(1) : 0;
-      return `
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                <div class="flex justify-between text-xs font-bold text-slate-800 mb-1.5">
-                    <span>MPK #${c.number}: ${c.name}</span>
-                    <span>${v} Suara (${pct}%)</span>
-                </div>
-                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${c.color}"></div>
-                </div>
-            </div>
-        `;
-    }).join("");
-
-    const tableMpkEl = document.getElementById("table-rekap-mpk");
-    tableMpkEl.innerHTML = CANDIDATES_MPK.map((c) => {
-      let v = this.votesMpk[c.id] || 0;
-      let pct = totalVotesMpk > 0 ? ((v / totalVotesMpk) * 100).toFixed(1) : 0;
-      return `
-            <tr class="hover:bg-slate-50 transition-colors">
-                <td class="p-3 font-bold text-slate-800">MPK #${c.number}</td>
-                <td class="p-3">${c.name}</td>
-                <td class="p-3 text-center font-bold text-blue-600">${v} Suara</td>
-                <td class="p-3 text-right font-bold">${pct}%</td>
-            </tr>
-        `;
-    }).join("");
-
-    this.renderVotersTable();
-
-    const ctxOsis = document.getElementById("scoreChartOsis").getContext("2d");
-    const labelsOsis = CANDIDATES_OSIS.map((c) => `OSIS #${c.number}`);
-    const dataOsis = CANDIDATES_OSIS.map((c) => this.votesOsis[c.id] || 0);
-    const colorsOsis = CANDIDATES_OSIS.map((c) => c.color);
-
-    if (this.chartOsisInstance) {
-      this.chartOsisInstance.data.datasets[0].data = dataOsis;
-      this.chartOsisInstance.update();
-    } else {
-      this.chartOsisInstance = new Chart(ctxOsis, {
-        type: "bar",
-        data: {
-          labels: labelsOsis,
-          datasets: [
-            {
-              label: "Suara OSIS",
-              data: dataOsis,
-              backgroundColor: colorsOsis,
-              borderRadius: 8,
-              borderSkipped: false,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { stepSize: 1 } },
-            x: { grid: { display: false } },
-          },
-        },
-      });
-    }
-
-    const ctxMpk = document.getElementById("scoreChartMpk").getContext("2d");
-    const labelsMpk = CANDIDATES_MPK.map((c) => `MPK #${c.number}`);
-    const dataMpk = CANDIDATES_MPK.map((c) => this.votesMpk[c.id] || 0);
-    const colorsMpk = CANDIDATES_MPK.map((c) => c.color);
-
-    if (this.chartMpkInstance) {
-      this.chartMpkInstance.data.datasets[0].data = dataMpk;
-      this.chartMpkInstance.update();
-    } else {
-      this.chartMpkInstance = new Chart(ctxMpk, {
-        type: "bar",
-        data: {
-          labels: labelsMpk,
-          datasets: [
-            {
-              label: "Suara MPK",
-              data: dataMpk,
-              backgroundColor: colorsMpk,
-              borderRadius: 8,
-              borderSkipped: false,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { stepSize: 1 } },
-            x: { grid: { display: false } },
-          },
-        },
-      });
-    }
-  }
-
-  renderVotersTable() {
-    const filterKelas = document.getElementById("filter-kelas").value;
-    const tbody = document.getElementById("table-voters-list");
-    if (!tbody) return;
-
-    let filtered = this.votersList || this.votedUsers;
-    if (filterKelas === "GURU") {
-      filtered = filtered.filter((v) => v.kelas && v.kelas.startsWith("GURU"));
-    } else if (filterKelas !== "ALL") {
-      filtered = filtered.filter((v) => v.kelas === filterKelas);
-    }
-
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Belum ada data pemilih untuk filter ini.</td></tr>`;
+  loadCandidates: async function () {
+    const { data: candidates, error } = await _supabase.from("candidates").select("*");
+    if (error) {
+      this.showToast("Error", "Gagal memuat data kandidat.", "error");
       return;
     }
 
-    tbody.innerHTML = filtered
-      .map(
-        (v, index) => `
-            <tr class="hover:bg-slate-50 transition-colors">
-                <td class="p-3 text-slate-500 font-bold">${index + 1}</td>
-                <td class="p-3 font-semibold text-slate-800">${v.nama}</td>
-                <td class="p-3"><span class="px-2.5 py-1 ${v.kelas && v.kelas.startsWith("GURU") ? "bg-amber-50 text-amber-700" : "bg-purple-50 text-purple-700"} font-bold rounded-lg">${v.kelas || "-"}</span></td>
-                <td class="p-3 text-slate-500">${v.time || "-"}</td>
-                <td class="p-3 text-center">
-                    <button onclick="app.deleteVoter('${v.user_key}', '${v.nama}')" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-all border border-red-200" title="Hapus Data Pemilih">
-                        <i class="fa-solid fa-trash-can"></i> Hapus
-                    </button>
-                </td>
-            </tr>
-        `,
-      )
-      .join("");
-  }
+    const osisContainer = document.getElementById("candidates-osis-grid");
+    const mpkContainer = document.getElementById("candidates-mpk-grid");
 
-  async deleteVoter(userKey, voterName) {
-    if (confirm(`Apakah Anda yakin ingin menghapus data pemilih atas nama "${voterName}"? Pemilih bersangkutan akan dapat melakukan pemilihan ulang.`)) {
-      try {
-        const response = await fetch("api.php?action=delete_voter", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_key: userKey }),
-        });
-        const result = await response.json();
+    osisContainer.innerHTML = "";
+    mpkContainer.innerHTML = "";
 
-        if (result.status === "success") {
-          await this.renderDashboard();
-          this.showToast("Berhasil Dihapus", `Data pemilih ${voterName} telah dihapus.`);
-        } else {
-          alert(result.message);
-        }
-      } catch (e) {
-        alert("Gagal menghapus data.");
-      }
+    const osisList = candidates.filter((c) => c.category === "osis");
+    const mpkList = candidates.filter((c) => c.category === "mpk");
+
+    osisList.forEach((c) => {
+      osisContainer.innerHTML += `
+        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-brand-500 transition-all">
+          <div>
+            <div class="w-full h-48 rounded-xl overflow-hidden bg-slate-100 mb-4 border">
+              <img src="${c.photo || "./image/onsit.jpeg"}" alt="${c.name}" class="w-full h-full object-cover" />
+            </div>
+            <span class="px-3 py-1 bg-brand-100 text-brand-800 text-xs font-bold rounded-lg">Paslon No. ${c.number}</span>
+            <h3 class="text-lg font-bold text-slate-900 mt-2">${c.name}</h3>
+            <p class="text-xs text-slate-500 mt-1"><strong>Visi:</strong> ${c.vision || "-"}</p>
+          </div>
+          <button onclick="app.openModal('osis', ${c.id}, '${c.name.replace(/'/g, "\\'")}')" class="mt-6 w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-md transition-all">
+            Pilih Paslon ${c.number}
+          </button>
+        </div>`;
+    });
+
+    mpkList.forEach((c) => {
+      mpkContainer.innerHTML += `
+        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-blue-500 transition-all">
+          <div>
+            <div class="w-full h-48 rounded-xl overflow-hidden bg-slate-100 mb-4 border">
+              <img src="${c.photo || "./image/onsit.jpeg"}" alt="${c.name}" class="w-full h-full object-cover" />
+            </div>
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-lg">Paslon No. ${c.number}</span>
+            <h3 class="text-lg font-bold text-slate-900 mt-2">${c.name}</h3>
+            <p class="text-xs text-slate-500 mt-1"><strong>Visi:</strong> ${c.vision || "-"}</p>
+          </div>
+          <button onclick="app.openModal('mpk', ${c.id}, '${c.name.replace(/'/g, "\\'")}')" class="mt-6 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-md transition-all">
+            Pilih Paslon ${c.number}
+          </button>
+        </div>`;
+    });
+  },
+
+  openModal: function (type, id, name) {
+    this.selectedVote = { type, candidateId: id, candidateName: name };
+    document.getElementById("modal-type-title").textContent = type.toUpperCase();
+    document.getElementById("modal-candidate-name").textContent = name;
+    document.getElementById("modal-confirm").classList.remove("hidden");
+  },
+
+  closeModal: function () {
+    document.getElementById("modal-confirm").classList.add("hidden");
+  },
+
+  confirmVote: async function () {
+    const { type, candidateId } = this.selectedVote;
+    if (!this.currentUser) return;
+
+    // Simpan ke tabel voters & update votes kandidat
+    // Cek apakah sudah ada baris voters untuk user ini
+    const { data: existingVoter } = await _supabase.from("voters").select("*").eq("name", this.currentUser.name).eq("kelas", this.currentUser.kelas).single();
+
+    let voterError;
+    if (existingVoter) {
+      let updatePayload = type === "osis" ? { voted_osis: candidateId } : { voted_mpk: candidateId };
+      const { error } = await _supabase.from("voters").update(updatePayload).eq("id", existingVoter.id);
+      voterError = error;
+    } else {
+      let insertPayload = {
+        name: this.currentUser.name,
+        kelas: this.currentUser.kelas,
+        voted_osis: type === "osis" ? candidateId : null,
+        voted_mpk: type === "mpk" ? candidateId : null,
+      };
+      const { error } = await _supabase.from("voters").insert([insertPayload]);
+      voterError = error;
     }
-  }
 
-  exportData() {
-    const data = {
-      timestamp: new Date().toISOString(),
-      totalVoters: this.votedUsers.length,
-      resultsOsis: CANDIDATES_OSIS.map((c) => ({ number: c.number, name: c.name, votes: this.votesOsis[c.id] || 0 })),
-      resultsMpk: CANDIDATES_MPK.map((c) => ({ number: c.number, name: c.name, votes: this.votesMpk[c.id] || 0 })),
-      votersList: this.votedUsers,
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Laporan_Pilketos_SMPN162_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    this.showToast("Export Berhasil", "Laporan rekapitulasi berhasil diunduh.");
-  }
-
-  async resetElectionData() {
-    if (confirm("PERINGATAN: Apakah Anda yakin ingin mereset seluruh data suara dan pemilih di database?")) {
-      try {
-        const response = await fetch("api.php?action=reset_election", {
-          method: "POST",
-        });
-        const result = await response.json();
-
-        if (result.status === "success") {
-          localStorage.clear();
-          this.votesOsis = {};
-          this.votesMpk = {};
-          this.votedUsers = [];
-          this.currentUser = null;
-          this.updateNavBadge();
-          router.navigate("home");
-          this.showToast("Reset Berhasil", "Semua data pemilu di database dikosongkan.");
-        }
-      } catch (e) {
-        alert("Gagal mereset data.");
-      }
+    if (voterError) {
+      this.showToast("Error", "Gagal merekam suara.", "error");
+      this.closeModal();
+      return;
     }
-  }
 
-  showToast(title, msg) {
+    // Ambil kandidat saat ini untuk increment votes
+    const { data: candidateData } = await _supabase.from("candidates").select("votes").eq("id", candidateId).single();
+    if (candidateData) {
+      await _supabase
+        .from("candidates")
+        .update({ votes: (candidateData.votes || 0) + 1 })
+        .eq("id", candidateId);
+    }
+
+    this.closeModal();
+    this.showToast("Sukses", `Pilihan ${type.toUpperCase()} berhasil disimpan!`);
+
+    if (type === "osis") {
+      // Tampilkan bagian MPK
+      document.getElementById("step-osis-container").classList.add("opacity-50", "pointer-events-none");
+      document.getElementById("step-mpk-container").classList.remove("hidden");
+      window.scrollTo({ top: document.getElementById("step-mpk-container").offsetTop, behavior: "smooth" });
+    } else {
+      // Selesai kedua tahap, kembali ke home atau logout
+      setTimeout(() => {
+        this.logout();
+      }, 2000);
+    }
+  },
+
+  handleAdminLogin: function (e) {
+    e.preventDefault();
+    const pin = document.getElementById("input-admin-pin").value.trim();
+    if (pin === "admin123" || pin === "guru123") {
+      document.getElementById("admin-login-error").classList.add("hidden");
+      router.navigate("dashboard");
+      this.showToast("Sukses", "Berhasil masuk ke Dashboard.");
+    } else {
+      document.getElementById("admin-login-error").classList.remove("hidden");
+    }
+  },
+
+  loadDashboardData: async function () {
+    const { data: candidates } = await _supabase.from("candidates").select("*");
+    const { data: voters } = await _supabase.from("voters").select("*");
+
+    if (!candidates || !voters) return;
+
+    document.getElementById("stat-total-voters").textContent = `${voters.length} Pemilih`;
+
+    const osisList = candidates.filter((c) => c.category === "osis").sort((a, b) => b.votes - a.votes);
+    const mpkList = candidates.filter((c) => c.category === "mpk").sort((a, b) => b.votes - a.votes);
+
+    document.getElementById("stat-leading-osis").textContent = osisList.length > 0 ? `${osisList[0].name} (${osisList[0].votes})` : "Belum Ada Suara";
+    document.getElementById("stat-leading-mpk").textContent = mpkList.length > 0 ? `${mpkList[0].name} (${mpkList[0].votes})` : "Belum Ada Suara";
+
+    // Render List & Tabel OSIS
+    const dashOsisList = document.getElementById("dashboard-osis-list");
+    const tableOsis = document.getElementById("table-rekap-osis");
+    dashOsisList.innerHTML = "";
+    tableOsis.innerHTML = "";
+
+    let totalOsisVotes = osisList.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+
+    osisList.forEach((c) => {
+      let percent = totalOsisVotes > 0 ? ((c.votes / totalOsisVotes) * 100).toFixed(1) : 0;
+      dashOsisList.innerHTML += `
+        <div class="p-3 bg-slate-50 rounded-xl border flex items-center justify-between">
+          <div><h4 class="font-bold text-xs">Paslon ${c.number}: ${c.name}</h4></div>
+          <span class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-lg">${c.votes || 0} Suara</span>
+        </div>`;
+      tableOsis.innerHTML += `
+        <tr class="hover:bg-slate-50">
+          <td class="p-3 font-bold">Paslon ${c.number}</td>
+          <td class="p-3">${c.name}</td>
+          <td class="p-3 text-center font-bold">${c.votes || 0}</td>
+          <td class="p-3 text-right font-bold text-emerald-600">${percent}%</td>
+        </tr>`;
+    });
+
+    // Render List & Tabel MPK
+    const dashMpkList = document.getElementById("dashboard-mpk-list");
+    const tableMpk = document.getElementById("table-rekap-mpk");
+    dashMpkList.innerHTML = "";
+    tableMpk.innerHTML = "";
+
+    let totalMpkVotes = mpkList.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+
+    mpkList.forEach((c) => {
+      let percent = totalMpkVotes > 0 ? ((c.votes / totalMpkVotes) * 100).toFixed(1) : 0;
+      dashMpkList.innerHTML += `
+        <div class="p-3 bg-slate-50 rounded-xl border flex items-center justify-between">
+          <div><h4 class="font-bold text-xs">Paslon ${c.number}: ${c.name}</h4></div>
+          <span class="text-xs font-extrabold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-lg">${c.votes || 0} Suara</span>
+        </div>`;
+      tableMpk.innerHTML += `
+        <tr class="hover:bg-slate-50">
+          <td class="p-3 font-bold">Paslon ${c.number}</td>
+          <td class="p-3">${c.name}</td>
+          <td class="p-3 text-center font-bold">${c.votes || 0}</td>
+          <td class="p-3 text-right font-bold text-blue-600">${percent}%</td>
+        </tr>`;
+    });
+
+    this.renderCharts(osisList, mpkList);
+    this.renderVotersTable();
+  },
+
+  renderCharts: function (osisList, mpkList) {
+    const ctxOsis = document.getElementById("scoreChartOsis").getContext("2d");
+    const ctxMpk = document.getElementById("scoreChartMpk").getContext("2d");
+
+    if (this.charts.osis) this.charts.osis.destroy();
+    if (this.charts.mpk) this.charts.mpk.destroy();
+
+    this.charts.osis = new Chart(ctxOsis, {
+      type: "bar",
+      data: {
+        labels: osisList.map((c) => `Paslon ${c.number}`),
+        datasets: [{ label: "Suara OSIS", data: osisList.map((c) => c.votes || 0), backgroundColor: "#22c55e", borderRadius: 8 }],
+      },
+      options: { responsive: true, maintainAspectRatio: false },
+    });
+
+    this.charts.mpk = new Chart(ctxMpk, {
+      type: "bar",
+      data: {
+        labels: mpkList.map((c) => `Paslon ${c.number}`),
+        datasets: [{ label: "Suara MPK", data: mpkList.map((c) => c.votes || 0), backgroundColor: "#3b82f6", borderRadius: 8 }],
+      },
+      options: { responsive: true, maintainAspectRatio: false },
+    });
+  },
+
+  renderVotersTable: async function () {
+    const filter = document.getElementById("filter-kelas").value;
+    let query = _supabase.from("voters").select("*");
+
+    if (filter !== "ALL") {
+      query = query.eq("kelas", filter);
+    }
+
+    const { data: voters } = await query;
+    const tableVoters = document.getElementById("table-voters-list");
+    tableVoters.innerHTML = "";
+
+    if (!voters || voters.length === 0) {
+      tableVoters.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada data pemilih.</td></tr>`;
+      return;
+    }
+
+    voters.forEach((v, index) => {
+      let timeStr = new Date(v.created_at).toLocaleTimeString("id-ID");
+      tableVoters.innerHTML += `
+        <tr class="hover:bg-slate-50">
+          <td class="p-3 font-bold">${index + 1}</td>
+          <td class="p-3 font-semibold text-slate-800">${v.name}</td>
+          <td class="p-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-xs">${v.kelas}</span></td>
+          <td class="p-3 text-slate-500">${timeStr}</td>
+          <td class="p-3 text-center">
+            <span class="text-emerald-600 font-bold"><i class="fa-solid fa-check-circle"></i> Selesai</span>
+          </td>
+        </tr>`;
+    });
+  },
+
+  exportData: async function () {
+    const { data: candidates } = await _supabase.from("candidates").select("*");
+    const { data: voters } = await _supabase.from("voters").select("*");
+
+    const exportObj = { school: "SMPN 162 Jakarta", year: "2026/2027", candidates, voters };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+    const dlAnchor = document.createElement("a");
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", "evoting_smpn162_report.json");
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    this.showToast("Export Berhasil", "File laporan JSON berhasil diunduh.");
+  },
+
+  showToast: function (title, msg) {
     const toast = document.getElementById("toast-success");
-    if (!toast) return;
     document.getElementById("toast-title").textContent = title;
     document.getElementById("toast-msg").textContent = msg;
-
     toast.classList.remove("translate-y-24", "opacity-0");
     setTimeout(() => {
       toast.classList.add("translate-y-24", "opacity-0");
     }, 3500);
-  }
-}
-
-let app;
-window.onload = function () {
-  app = new EvotingApp();
+  },
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+  app.init();
+});
