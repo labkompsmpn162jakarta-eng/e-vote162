@@ -155,6 +155,7 @@ const app = {
             <span class="px-3 py-1 bg-brand-100 text-brand-800 text-xs font-bold rounded-lg">Paslon No. ${c.number}</span>
             <h3 class="text-lg font-bold text-slate-900 mt-2">${c.name}</h3>
             <p class="text-xs text-slate-500 mt-1"><strong>Visi:</strong> ${c.vision || "-"}</p>
+            <p class="text-xs text-slate-500 mt-1"><strong>Misi:</strong> ${c.mission || "-"}</p>
           </div>
           <button onclick="app.openModal('osis', ${c.id}, '${c.name.replace(/'/g, "\\'")}')" class="mt-6 w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-md transition-all">
             Pilih Paslon ${c.number}
@@ -172,6 +173,7 @@ const app = {
             <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-lg">Paslon No. ${c.number}</span>
             <h3 class="text-lg font-bold text-slate-900 mt-2">${c.name}</h3>
             <p class="text-xs text-slate-500 mt-1"><strong>Visi:</strong> ${c.vision || "-"}</p>
+            <p class="text-xs text-slate-500 mt-1"><strong>Misi:</strong> ${c.mission || "-"}</p>
           </div>
           <button onclick="app.openModal('mpk', ${c.id}, '${c.name.replace(/'/g, "\\'")}')" class="mt-6 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-md transition-all">
             Pilih Paslon ${c.number}
