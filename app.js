@@ -137,15 +137,17 @@ const app = {
     const osisContainer = document.getElementById("candidates-osis-grid");
     const mpkContainer = document.getElementById("candidates-mpk-grid");
 
+    if (!osisContainer || !mpkContainer) return;
+
     osisContainer.innerHTML = "";
     mpkContainer.innerHTML = "";
 
-    const osisList = candidates.filter((c) => c.category === "osis");
-    const mpkList = candidates.filter((c) => c.category === "mpk");
+    const osisList = candidates.filter((c) => String(c.category).toLowerCase() === "osis");
+    const mpkList = candidates.filter((c) => String(c.category).toLowerCase() === "mpk");
 
     osisList.forEach((c) => {
       osisContainer.innerHTML += `
-        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-brand-500 transition-all">
+        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-brand-500 transition-all bg-white shadow-sm">
           <div>
             <div class="w-full h-48 rounded-xl overflow-hidden bg-slate-100 mb-4 border">
               <img src="${c.photo || "./image/onsit.jpeg"}" alt="${c.name}" class="w-full h-full object-cover" />
@@ -162,7 +164,7 @@ const app = {
 
     mpkList.forEach((c) => {
       mpkContainer.innerHTML += `
-        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-blue-500 transition-all">
+        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-blue-500 transition-all bg-white shadow-sm">
           <div>
             <div class="w-full h-48 rounded-xl overflow-hidden bg-slate-100 mb-4 border">
               <img src="${c.photo || "./image/onsit.jpeg"}" alt="${c.name}" class="w-full h-full object-cover" />
@@ -194,7 +196,6 @@ const app = {
     if (!this.currentUser) return;
 
     // Simpan ke tabel voters & update votes kandidat
-    // Cek apakah sudah ada baris voters untuk user ini
     const { data: existingVoter } = await _supabase.from("voters").select("*").eq("name", this.currentUser.name).eq("kelas", this.currentUser.kelas).single();
 
     let voterError;
@@ -264,8 +265,8 @@ const app = {
 
     document.getElementById("stat-total-voters").textContent = `${voters.length} Pemilih`;
 
-    const osisList = candidates.filter((c) => c.category === "osis").sort((a, b) => b.votes - a.votes);
-    const mpkList = candidates.filter((c) => c.category === "mpk").sort((a, b) => b.votes - a.votes);
+    const osisList = candidates.filter((c) => String(c.category).toLowerCase() === "osis").sort((a, b) => b.votes - a.votes);
+    const mpkList = candidates.filter((c) => String(c.category).toLowerCase() === "mpk").sort((a, b) => b.votes - a.votes);
 
     document.getElementById("stat-leading-osis").textContent = osisList.length > 0 ? `${osisList[0].name} (${osisList[0].votes})` : "Belum Ada Suara";
     document.getElementById("stat-leading-mpk").textContent = mpkList.length > 0 ? `${mpkList[0].name} (${mpkList[0].votes})` : "Belum Ada Suara";
@@ -273,49 +274,57 @@ const app = {
     // Render List & Tabel OSIS
     const dashOsisList = document.getElementById("dashboard-osis-list");
     const tableOsis = document.getElementById("table-rekap-osis");
-    dashOsisList.innerHTML = "";
-    tableOsis.innerHTML = "";
+    if (dashOsisList) dashOsisList.innerHTML = "";
+    if (tableOsis) tableOsis.innerHTML = "";
 
     let totalOsisVotes = osisList.reduce((acc, curr) => acc + (curr.votes || 0), 0);
 
     osisList.forEach((c) => {
       let percent = totalOsisVotes > 0 ? ((c.votes / totalOsisVotes) * 100).toFixed(1) : 0;
-      dashOsisList.innerHTML += `
-        <div class="p-3 bg-slate-50 rounded-xl border flex items-center justify-between">
-          <div><h4 class="font-bold text-xs">Paslon ${c.number}: ${c.name}</h4></div>
-          <span class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-lg">${c.votes || 0} Suara</span>
-        </div>`;
-      tableOsis.innerHTML += `
-        <tr class="hover:bg-slate-50">
-          <td class="p-3 font-bold">Paslon ${c.number}</td>
-          <td class="p-3">${c.name}</td>
-          <td class="p-3 text-center font-bold">${c.votes || 0}</td>
-          <td class="p-3 text-right font-bold text-emerald-600">${percent}%</td>
-        </tr>`;
+      if (dashOsisList) {
+        dashOsisList.innerHTML += `
+          <div class="p-3 bg-slate-50 rounded-xl border flex items-center justify-between">
+            <div><h4 class="font-bold text-xs">Paslon ${c.number}: ${c.name}</h4></div>
+            <span class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-lg">${c.votes || 0} Suara</span>
+          </div>`;
+      }
+      if (tableOsis) {
+        tableOsis.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold">Paslon ${c.number}</td>
+            <td class="p-3">${c.name}</td>
+            <td class="p-3 text-center font-bold">${c.votes || 0}</td>
+            <td class="p-3 text-right font-bold text-emerald-600">${percent}%</td>
+          </tr>`;
+      }
     });
 
     // Render List & Tabel MPK
     const dashMpkList = document.getElementById("dashboard-mpk-list");
     const tableMpk = document.getElementById("table-rekap-mpk");
-    dashMpkList.innerHTML = "";
-    tableMpk.innerHTML = "";
+    if (dashMpkList) dashMpkList.innerHTML = "";
+    if (tableMpk) tableMpk.innerHTML = "";
 
     let totalMpkVotes = mpkList.reduce((acc, curr) => acc + (curr.votes || 0), 0);
 
     mpkList.forEach((c) => {
       let percent = totalMpkVotes > 0 ? ((c.votes / totalMpkVotes) * 100).toFixed(1) : 0;
-      dashMpkList.innerHTML += `
-        <div class="p-3 bg-slate-50 rounded-xl border flex items-center justify-between">
-          <div><h4 class="font-bold text-xs">Paslon ${c.number}: ${c.name}</h4></div>
-          <span class="text-xs font-extrabold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-lg">${c.votes || 0} Suara</span>
-        </div>`;
-      tableMpk.innerHTML += `
-        <tr class="hover:bg-slate-50">
-          <td class="p-3 font-bold">Paslon ${c.number}</td>
-          <td class="p-3">${c.name}</td>
-          <td class="p-3 text-center font-bold">${c.votes || 0}</td>
-          <td class="p-3 text-right font-bold text-blue-600">${percent}%</td>
-        </tr>`;
+      if (dashMpkList) {
+        dashMpkList.innerHTML += `
+          <div class="p-3 bg-slate-50 rounded-xl border flex items-center justify-between">
+            <div><h4 class="font-bold text-xs">Paslon ${c.number}: ${c.name}</h4></div>
+            <span class="text-xs font-extrabold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-lg">${c.votes || 0} Suara</span>
+          </div>`;
+      }
+      if (tableMpk) {
+        tableMpk.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold">Paslon ${c.number}</td>
+            <td class="p-3">${c.name}</td>
+            <td class="p-3 text-center font-bold">${c.votes || 0}</td>
+            <td class="p-3 text-right font-bold text-blue-600">${percent}%</td>
+          </tr>`;
+      }
     });
 
     this.renderCharts(osisList, mpkList);
@@ -323,8 +332,12 @@ const app = {
   },
 
   renderCharts: function (osisList, mpkList) {
-    const ctxOsis = document.getElementById("scoreChartOsis").getContext("2d");
-    const ctxMpk = document.getElementById("scoreChartMpk").getContext("2d");
+    const elOsis = document.getElementById("scoreChartOsis");
+    const elMpk = document.getElementById("scoreChartMpk");
+    if (!elOsis || !elMpk) return;
+
+    const ctxOsis = elOsis.getContext("2d");
+    const ctxMpk = elMpk.getContext("2d");
 
     if (this.charts.osis) this.charts.osis.destroy();
     if (this.charts.mpk) this.charts.mpk.destroy();
@@ -349,7 +362,9 @@ const app = {
   },
 
   renderVotersTable: async function () {
-    const filter = document.getElementById("filter-kelas").value;
+    const filterEl = document.getElementById("filter-kelas");
+    if (!filterEl) return;
+    const filter = filterEl.value;
     let query = _supabase.from("voters").select("*");
 
     if (filter !== "ALL") {
@@ -358,6 +373,7 @@ const app = {
 
     const { data: voters } = await query;
     const tableVoters = document.getElementById("table-voters-list");
+    if (!tableVoters) return;
     tableVoters.innerHTML = "";
 
     if (!voters || voters.length === 0) {
@@ -397,6 +413,7 @@ const app = {
 
   showToast: function (title, msg) {
     const toast = document.getElementById("toast-success");
+    if (!toast) return;
     document.getElementById("toast-title").textContent = title;
     document.getElementById("toast-msg").textContent = msg;
     toast.classList.remove("translate-y-24", "opacity-0");
