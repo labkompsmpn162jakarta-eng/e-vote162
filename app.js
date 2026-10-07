@@ -139,6 +139,10 @@ const app = {
 
     if (!osisContainer || !mpkContainer) return;
 
+    // Memusatkan posisi grid menggunakan flexbox dan justify-center
+    osisContainer.className = "flex flex-wrap justify-center gap-8 max-w-6xl mx-auto";
+    mpkContainer.className = "flex flex-wrap justify-center gap-8 max-w-4xl mx-auto";
+
     osisContainer.innerHTML = "";
     mpkContainer.innerHTML = "";
 
@@ -147,7 +151,7 @@ const app = {
 
     osisList.forEach((c) => {
       osisContainer.innerHTML += `
-        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-brand-500 transition-all bg-white shadow-sm">
+        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-brand-500 transition-all bg-white shadow-sm w-full sm:w-[350px]">
           <div>
             <div class="w-full h-48 rounded-xl overflow-hidden bg-slate-100 mb-4 border">
               <img src="${c.photo || "./image/onsit.jpeg"}" alt="${c.name}" class="w-full h-full object-cover" />
@@ -165,7 +169,7 @@ const app = {
 
     mpkList.forEach((c) => {
       mpkContainer.innerHTML += `
-        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-blue-500 transition-all bg-white shadow-sm">
+        <div class="clay-card rounded-2xl p-6 flex flex-col justify-between border-2 border-transparent hover:border-blue-500 transition-all bg-white shadow-sm w-full sm:w-[350px]">
           <div>
             <div class="w-full h-48 rounded-xl overflow-hidden bg-slate-100 mb-4 border">
               <img src="${c.photo || "./image/onsit.jpeg"}" alt="${c.name}" class="w-full h-full object-cover" />
