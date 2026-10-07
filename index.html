@@ -81,4 +81,437 @@
               <img src="./image/onsit.jpeg" alt="Logo SMPN 162 Jakarta" class="w-full h-full object-contain drop-shadow-sm" />
             </div>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Pemilihan Raya OSIS & MPK</h2>
-            <p class="text-emerald-700 font-semibold text-xs sm:text-sm mb-6">SMP Negeri 162 Jakarta Tahun Ajaran 202
+            <p class="text-emerald-700 font-semibold text-xs sm:text-sm mb-6">SMP Negeri 162 Jakarta Tahun Ajaran 2026/2027</p>
+
+            <!-- Role Switcher Tabs -->
+            <div class="flex bg-slate-100 p-1.5 rounded-xl max-w-xs mx-auto mb-6 border border-slate-200">
+              <button type="button" id="tab-btn-siswa" onclick="app.switchLoginRole('siswa')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white text-brand-700 shadow-xs">
+                Login Siswa
+              </button>
+              <button type="button" id="tab-btn-guru" onclick="app.switchLoginRole('guru')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">
+                Login Guru
+              </button>
+            </div>
+
+            <p id="login-desc" class="text-slate-500 text-xs sm:text-sm mb-6 max-w-md mx-auto">Silakan masukkan Nama Lengkap dan Kelas Anda untuk mulai memberikan suara.</p>
+
+            <!-- Form Login Siswa -->
+            <form id="form-login-siswa" onsubmit="app.handleLogin(event, 'siswa')" class="space-y-4 max-w-md mx-auto text-left">
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nama Lengkap Siswa</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-user"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="input-nama-siswa"
+                    required
+                    placeholder="Contoh: Naura"
+                    class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Kelas</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-chalkboard"></i>
+                  </span>
+                  <select
+                    id="input-kelas-siswa"
+                    required
+                    class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium text-sm transition-all"
+                  >
+                    <option value="" disabled selected>Pilih Kelas Anda</option>
+                    <optgroup label="Kelas 7">
+                      <option value="7A">Kelas 7A</option>
+                      <option value="7B">Kelas 7B</option>
+                      <option value="7C">Kelas 7C</option>
+                      <option value="7D">Kelas 7D</option>
+                      <option value="7E">Kelas 7E</option>
+                      <option value="7F">Kelas 7F</option>
+                      <option value="7G">Kelas 7G</option>
+                      <option value="7H">Kelas 7H</option>
+                    </optgroup>
+                    <optgroup label="Kelas 8">
+                      <option value="8A">Kelas 8A</option>
+                      <option value="8B">Kelas 8B</option>
+                      <option value="8C">Kelas 8C</option>
+                      <option value="8D">Kelas 8D</option>
+                      <option value="8E">Kelas 8E</option>
+                      <option value="8F">Kelas 8F</option>
+                      <option value="8G">Kelas 8G</option>
+                      <option value="8H">Kelas 8H</option>
+                    </optgroup>
+                    <optgroup label="Kelas 9">
+                      <option value="9A">Kelas 9A</option>
+                      <option value="9B">Kelas 9B</option>
+                      <option value="9C">Kelas 9C</option>
+                      <option value="9D">Kelas 9D</option>
+                      <option value="9E">Kelas 9E</option>
+                      <option value="9F">Kelas 9F</option>
+                      <option value="9G">Kelas 9G</option>
+                      <option value="9H">Kelas 9H</option>
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="w-full py-3.5 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2 text-sm mt-2"
+              >
+                <span>Masuk & Mulai Memilih (Siswa)</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </form>
+
+            <!-- Form Login Guru -->
+            <form id="form-login-guru" onsubmit="app.handleLogin(event, 'guru')" class="space-y-4 max-w-md mx-auto text-left hidden">
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nama Lengkap & Gelar Guru</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="input-nama-guru"
+                    required
+                    placeholder="Contoh: Tri Supangadi, S.Ag."
+                    class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">NIP / Kode Guru</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid id-card"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="input-nip-guru"
+                    required
+                    placeholder="Contoh: 198001012005011001"
+                    class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-800 font-medium placeholder-slate-400 text-sm transition-all"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="w-full py-3.5 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2 text-sm mt-2"
+              >
+                <span>Masuk & Mulai Memilih (Guru)</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-slate-100 text-xs text-slate-400 flex items-center justify-center gap-4">
+              <span class="flex items-center gap-1"><i class="fa-solid fa-lock text-brand-600"></i> Transparan</span>
+              <span class="flex items-center gap-1"><i class="fa-solid fa-user-shield text-brand-600"></i> 1 Pemilih 1 Hak Suara</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: VOTING DASHBOARD (3 Paslon OSIS & 2 Paslon MPK) -->
+      <section id="view-voting" class="view-section hidden space-y-12">
+        <!-- Bagian 1: Pemilihan OSIS -->
+        <div id="step-osis-container">
+          <div class="text-center max-w-3xl mx-auto mb-8">
+            <span class="px-3.5 py-1.5 bg-brand-100 text-brand-800 text-xs font-bold rounded-full uppercase tracking-wider mb-3 inline-block">Tahap 1 dari 2</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-1">Pemilihan Calon Ketua & Wakil Ketua OSIS</h2>
+            <p class="text-slate-500 text-sm sm:text-base mt-2">Pilih salah satu dari 3 pasangan calon pengurus OSIS SMPN 162 Jakarta periode mendatang.</p>
+          </div>
+          <div id="candidates-osis-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Bagian 2: Pemilihan MPK -->
+        <div id="step-mpk-container" class="hidden pt-8 border-t border-slate-200">
+          <div class="text-center max-w-3xl mx-auto mb-8">
+            <span class="px-3.5 py-1.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full uppercase tracking-wider mb-3 inline-block">Tahap 2 dari 2</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-1">Pemilihan Calon Pengurus MPK</h2>
+            <p class="text-slate-500 text-sm sm:text-base mt-2">Pilih salah satu dari 2 pasangan calon pengurus Majelis Perwakilan Kelas (MPK).</p>
+          </div>
+          <div id="candidates-mpk-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: ADMIN & TEACHER LOGIN -->
+      <section id="view-admin-login" class="view-section hidden max-w-md mx-auto mt-12">
+        <div class="clay-card rounded-2xl p-8">
+          <div class="text-center mb-6">
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+              <i class="fa-solid fa-key text-xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900">Akses Khusus Admin & Guru</h3>
+            <p class="text-xs text-slate-500 mt-1">Masukkan PIN otorisasi untuk membuka live skor OSIS & MPK.</p>
+          </div>
+
+          <form onsubmit="app.handleAdminLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1">PIN Akses</label>
+              <input
+                type="password"
+                id="input-admin-pin"
+                required
+                placeholder="Masukkan PIN..."
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm font-medium"
+              />
+            </div>
+            <div id="admin-login-error" class="hidden text-xs text-red-600 font-semibold bg-red-50 p-2.5 rounded-lg border border-red-200">
+              PIN salah! Gunakan <span class="font-bold">admin123</span> atau <span class="font-bold">guru123</span>.
+            </div>
+            <div class="flex gap-3 pt-2">
+              <button type="button" onclick="router.navigate('home')" class="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all">Batal</button>
+              <button type="submit" class="w-2/3 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-lg transition-all">Buka Dashboard</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- VIEW 4: LIVE SCORE DASHBOARD -->
+      <section id="view-dashboard" class="view-section hidden space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg mb-2">
+              <i class="fa-solid fa-circle text-[8px] animate-pulse text-emerald-600"></i> Live Skor Pemilu Raya SMPN 162 Jakarta
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-900">Dashboard Pemantauan & Analisis</h2>
+            <p class="text-xs text-slate-500">Hasil suara real-time terpisah untuk Kandidat OSIS dan Kandidat MPK serta daftar pemilih.</p>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <button
+              onclick="app.exportData()"
+              class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs flex items-center gap-2 transition-all border border-slate-300"
+            >
+              <i class="fa-solid fa-download text-brand-600"></i> Export Laporan JSON
+            </button>
+            <button
+              onclick="app.resetElectionData()"
+              class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-bold text-xs flex items-center gap-2 transition-all border border-red-200"
+            >
+              <i class="fa-solid fa-rotate-right"></i> Reset Suara
+            </button>
+            <button onclick="router.navigate('home')" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-md">
+              <i class="fa-solid fa-arrow-left"></i> Keluar Dashboard
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Overview Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
+            <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase text-slate-400">Total Partisipasi Pemilih</p>
+              <h3 id="stat-total-voters" class="text-3xl font-extrabold text-slate-900 mt-0.5">0 Pemilih</h3>
+            </div>
+          </div>
+          <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
+            <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase text-slate-400">Unggul OSIS</p>
+              <h3 id="stat-leading-osis" class="text-sm font-bold text-slate-900 mt-1 truncate max-w-[200px]">Belum Ada Suara</h3>
+            </div>
+          </div>
+          <div class="clay-card p-6 rounded-2xl flex items-center gap-4">
+            <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              <i class="fa-solid fa-medal"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase text-slate-400">Unggul MPK</p>
+              <h3 id="stat-leading-mpk" class="text-sm font-bold text-slate-900 mt-1 truncate max-w-[200px]">Belum Ada Suara</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- BAGIAN 1: LIVE SKOR OSIS & TABEL REKAP -->
+        <div class="clay-card p-6 rounded-2xl space-y-6 border-t-4 border-t-emerald-600">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Bagian 1</span>
+              <h3 class="text-xl font-extrabold text-slate-900">Live Skor & Rekap Suara OSIS</h3>
+            </div>
+            <span class="text-xs text-slate-500 bg-emerald-50 px-3 py-1 rounded-lg font-semibold">3 Kandidat</span>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 relative h-64 w-full">
+              <canvas id="scoreChartOsis"></canvas>
+            </div>
+            <div id="dashboard-osis-list" class="space-y-3 overflow-y-auto max-h-64 pr-1">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+          <!-- Tabel Rekapitulasi OSIS -->
+          <div class="overflow-x-auto pt-4 border-t border-slate-100">
+            <h4 class="text-sm font-bold text-slate-800 mb-3"><i class="fa-solid fa-table text-emerald-600 mr-2"></i>Tabel Detail Perolehan Suara OSIS</h4>
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
+                  <th class="p-3 rounded-l-lg">No. Paslon</th>
+                  <th class="p-3">Nama Kandidat</th>
+                  <th class="p-3 text-center">Jumlah Suara</th>
+                  <th class="p-3 text-right rounded-r-lg">Persentase</th>
+                </tr>
+              </thead>
+              <tbody id="table-rekap-osis" class="divide-y divide-slate-100 font-medium text-slate-600">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- BAGIAN 2: LIVE SKOR MPK & TABEL REKAP -->
+        <div class="clay-card p-6 rounded-2xl space-y-6 border-t-4 border-t-blue-600">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Bagian 2</span>
+              <h3 class="text-xl font-extrabold text-slate-900">Live Skor & Rekap Suara MPK</h3>
+            </div>
+            <span class="text-xs text-slate-500 bg-blue-50 px-3 py-1 rounded-lg font-semibold">2 Kandidat</span>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 relative h-64 w-full">
+              <canvas id="scoreChartMpk"></canvas>
+            </div>
+            <div id="dashboard-mpk-list" class="space-y-3 overflow-y-auto max-h-64 pr-1">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+          <!-- Tabel Rekapitulasi MPK -->
+          <div class="overflow-x-auto pt-4 border-t border-slate-100">
+            <h4 class="text-sm font-bold text-slate-800 mb-3"><i class="fa-solid fa-table text-blue-600 mr-2"></i>Tabel Detail Perolehan Suara MPK</h4>
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
+                  <th class="p-3 rounded-l-lg">No. Paslon</th>
+                  <th class="p-3">Nama Kandidat</th>
+                  <th class="p-3 text-center">Jumlah Suara</th>
+                  <th class="p-3 text-right rounded-r-lg">Persentase</th>
+                </tr>
+              </thead>
+              <tbody id="table-rekap-mpk" class="divide-y divide-slate-100 font-medium text-slate-600">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- BAGIAN 3: DAFTAR PEMILIH YANG SUDAH MELAKUKAN PEMILIHAN & FILTER KELAS -->
+        <div class="clay-card p-6 rounded-2xl space-y-4 border-t-4 border-t-purple-600">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Partisipasi</span>
+              <h3 class="text-xl font-extrabold text-slate-900">Daftar Pemilih yang Sudah Memilih</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-bold uppercase text-slate-600">Filter Kategori:</label>
+              <select
+                id="filter-kelas"
+                onchange="app.renderVotersTable()"
+                class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              >
+                <option value="ALL">Semua Pemilih</option>
+                <option value="GURU">Guru / Staf</option>
+                <optgroup label="Kelas 7">
+                  <option value="7A">7A</option>
+                  <option value="7B">7B</option>
+                  <option value="7C">7C</option>
+                  <option value="7D">7D</option>
+                  <option value="7E">7E</option>
+                  <option value="7F">7F</option>
+                  <option value="7G">7G</option>
+                  <option value="7H">7H</option>
+                </optgroup>
+                <optgroup label="Kelas 8">
+                  <option value="8A">8A</option>
+                  <option value="8B">8B</option>
+                  <option value="8C">8C</option>
+                  <option value="8D">8D</option>
+                  <option value="8E">8E</option>
+                  <option value="8F">8F</option>
+                  <option value="8G">8G</option>
+                  <option value="8H">8H</option>
+                </optgroup>
+                <optgroup label="Kelas 9">
+                  <option value="9A">9A</option>
+                  <option value="9B">9B</option>
+                  <option value="9C">9C</option>
+                  <option value="9D">9D</option>
+                  <option value="9E">9E</option>
+                  <option value="9F">9F</option>
+                  <option value="9G">9G</option>
+                  <option value="9H">9H</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 uppercase font-bold">
+                  <th class="p-3 rounded-l-lg">No</th>
+                  <th class="p-3">Nama Pemilih</th>
+                  <th class="p-3">Kelas / Kategori</th>
+                  <th class="p-3">Waktu Memilih</th>
+                  <th class="p-3 text-center rounded-r-lg">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-voters-list" class="divide-y divide-slate-100 font-medium text-slate-600">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal Konfirmasi Pilihan -->
+    <div id="modal-confirm" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+      <div class="clay-card bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl">
+        <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+          <i class="fa-solid fa-circle-question"></i>
+        </div>
+        <h3 class="text-xl font-extrabold text-slate-900">Konfirmasi Pilihan <span id="modal-type-title">OSIS</span></h3>
+        <p class="text-slate-500 text-sm mt-2 mb-6">Anda memilih <span id="modal-candidate-name" class="font-bold text-slate-800">Paslon</span>. Pilihan tidak dapat diubah setelah dikonfirmasi.</p>
+        <div class="flex gap-3">
+          <button onclick="app.closeModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all">Periksa Lagi</button>
+          <button onclick="app.confirmVote()" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all">Ya, Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifikasi -->
+    <div id="toast-success" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300">
+      <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-xl flex items-center gap-3 border border-slate-700">
+        <div class="w-8 h-8 rounded-lg bg-brand-500 text-white flex items-center justify-center font-bold">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+          <h4 id="toast-title" class="text-xs font-bold">Sukses</h4>
+          <p id="toast-msg" class="text-[11px] text-slate-300">Aksi berhasil dilakukan.</p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-400">
+      <div class="max-w-7xl mx-auto px-4">
+        <p>© 2026 E-Voting OSIS & MPK - SMP Negeri 162 Jakarta. rismawan.193@guru.smp.belajar.id.</p>
+      </div>
+    </footer>
+
+    <!-- Custom Script -->
+    <script src="app.js"></script>
+  </body>
+</html>
