@@ -14,6 +14,7 @@ const router = {
     if (target) {
       target.classList.remove("hidden");
       window.scrollTo(0, 0);
+      localStorage.setItem("evoting_current_view", viewId);
       if (viewId === "dashboard") {
         app.loadDashboardData();
       }
@@ -36,6 +37,12 @@ const app = {
     if (savedUser) {
       this.currentUser = JSON.parse(savedUser);
       this.updateNavBadge();
+    }
+
+    // Pertahankan halaman saat di-refresh jika user sudah login atau membuka dashboard
+    const savedView = localStorage.getItem("evoting_current_view");
+    if (savedView && savedView !== "home") {
+      router.navigate(savedView);
     }
 
     // Setup Realtime listener untuk update live skor otomatis
@@ -121,6 +128,7 @@ const app = {
 
   logout: function () {
     localStorage.removeItem("evoting_user");
+    localStorage.removeItem("evoting_current_view");
     this.currentUser = null;
     this.updateNavBadge();
     router.navigate("home");
