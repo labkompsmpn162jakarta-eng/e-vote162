@@ -147,7 +147,7 @@ const app = {
     mpkContainer.innerHTML = "";
 
     const osisList = candidates.filter((c) => String(c.category).toLowerCase() === "osis");
-    const mpkList = candidates.filter((c) => String(c.category).toLowerCase() === "mpk");
+    const mpkList = candidates.filter((c) => String(c.category).toLowerCase() === "mpk").sort((a, b) => a.number - b.number);
 
     osisList.forEach((c) => {
       osisContainer.innerHTML += `
@@ -272,10 +272,13 @@ const app = {
     document.getElementById("stat-total-voters").textContent = `${voters.length} Pemilih`;
 
     const osisList = candidates.filter((c) => String(c.category).toLowerCase() === "osis").sort((a, b) => b.votes - a.votes);
-    const mpkList = candidates.filter((c) => String(c.category).toLowerCase() === "mpk").sort((a, b) => b.votes - a.votes);
+    const mpkList = candidates.filter((c) => String(c.category).toLowerCase() === "mpk").sort((a, b) => a.number - b.number);
 
-    document.getElementById("stat-leading-osis").textContent = osisList.length > 0 ? `${osisList[0].name} (${osisList[0].votes})` : "Belum Ada Suara";
-    document.getElementById("stat-leading-mpk").textContent = mpkList.length > 0 ? `${mpkList[0].name} (${mpkList[0].votes})` : "Belum Ada Suara";
+    const osisLeading = [...osisList].sort((a, b) => b.votes - a.votes);
+    const mpkLeading = [...mpkList].sort((a, b) => b.votes - a.votes);
+
+    document.getElementById("stat-leading-osis").textContent = osisLeading.length > 0 ? `${osisLeading[0].name} (${osisLeading[0].votes})` : "Belum Ada Suara";
+    document.getElementById("stat-leading-mpk").textContent = mpkLeading.length > 0 ? `${mpkLeading[0].name} (${mpkLeading[0].votes})` : "Belum Ada Suara";
 
     // Render List & Tabel OSIS
     const dashOsisList = document.getElementById("dashboard-osis-list");
