@@ -146,7 +146,7 @@ const app = {
     osisContainer.innerHTML = "";
     mpkContainer.innerHTML = "";
 
-    const osisList = candidates.filter((c) => String(c.category).toLowerCase() === "osis");
+    const osisList = candidates.filter((c) => String(c.category).toLowerCase() === "osis").sort((a, b) => a.number - b.number);
     const mpkList = candidates.filter((c) => String(c.category).toLowerCase() === "mpk").sort((a, b) => a.number - b.number);
 
     osisList.forEach((c) => {
@@ -271,7 +271,7 @@ const app = {
 
     document.getElementById("stat-total-voters").textContent = `${voters.length} Pemilih`;
 
-    const osisList = candidates.filter((c) => String(c.category).toLowerCase() === "osis").sort((a, b) => b.votes - a.votes);
+    const osisList = candidates.filter((c) => String(c.category).toLowerCase() === "osis").sort((a, b) => a.number - b.number);
     const mpkList = candidates.filter((c) => String(c.category).toLowerCase() === "mpk").sort((a, b) => a.number - b.number);
 
     const osisLeading = [...osisList].sort((a, b) => b.votes - a.votes);
@@ -351,11 +351,17 @@ const app = {
     if (this.charts.osis) this.charts.osis.destroy();
     if (this.charts.mpk) this.charts.mpk.destroy();
 
+    // Warna per paslon OSIS: Paslon 1 Hijau (#22c55e), Paslon 2 Merah (#ef4444)
+    const osisColors = osisList.map((c) => (c.number === 1 ? "#22c55e" : "#ef4444"));
+
+    // Warna per paslon MPK: Paslon 1 Biru (#3b82f6), Paslon 2 Orange (#f97316)
+    const mpkColors = mpkList.map((c) => (c.number === 1 ? "#3b82f6" : "#f97316"));
+
     this.charts.osis = new Chart(ctxOsis, {
       type: "bar",
       data: {
         labels: osisList.map((c) => `Paslon ${c.number}`),
-        datasets: [{ label: "Suara OSIS", data: osisList.map((c) => c.votes || 0), backgroundColor: "#22c55e", borderRadius: 8 }],
+        datasets: [{ label: "Suara OSIS", data: osisList.map((c) => c.votes || 0), backgroundColor: osisColors, borderRadius: 8 }],
       },
       options: { responsive: true, maintainAspectRatio: false },
     });
@@ -364,7 +370,7 @@ const app = {
       type: "bar",
       data: {
         labels: mpkList.map((c) => `Paslon ${c.number}`),
-        datasets: [{ label: "Suara MPK", data: mpkList.map((c) => c.votes || 0), backgroundColor: "#3b82f6", borderRadius: 8 }],
+        datasets: [{ label: "Suara MPK", data: mpkList.map((c) => c.votes || 0), backgroundColor: mpkColors, borderRadius: 8 }],
       },
       options: { responsive: true, maintainAspectRatio: false },
     });
