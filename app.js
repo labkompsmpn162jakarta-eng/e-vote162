@@ -435,6 +435,27 @@ const app = {
     this.loadDashboardData();
   },
 
+  resetVotes: async function () {
+    if (!confirm("PERINGATAN: Apakah Anda yakin ingin mereset SELURUH suara? Semua data pilihan pemilih akan dihapus dan suara kandidat akan kembali menjadi 0.")) return;
+
+    // Kosongkan tabel voters
+    const { error: errorVoters } = await _supabase.from("voters").delete().neq("id", 0);
+    if (errorVoters) {
+      this.showToast("Error", "Gagal mengosongkan data pemilih.", "error");
+      return;
+    }
+
+    // Reset jumlah suara semua kandidat menjadi 0
+    const { error: errorCandidates } = await _supabase.from("candidates").update({ votes: 0 }).neq("id", 0);
+    if (errorCandidates) {
+      this.showToast("Error", "Gagal mereset suara kandidat.", "error");
+      return;
+    }
+
+    this.showToast("Sukses", "Semua suara berhasil direset.");
+    this.loadDashboardData();
+  },
+
   exportData: async function () {
     const { data: candidates } = await _supabase.from("candidates").select("*");
     const { data: voters } = await _supabase.from("voters").select("*");
