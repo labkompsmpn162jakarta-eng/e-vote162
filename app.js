@@ -435,7 +435,7 @@ const app = {
     this.loadDashboardData();
   },
 
-  resetVotes: async function () {
+  resetElectionData: async function () {
     if (!confirm("PERINGATAN: Apakah Anda yakin ingin mereset SELURUH suara? Semua data pilihan pemilih akan dihapus dan suara kandidat akan kembali menjadi 0.")) return;
 
     // Kosongkan tabel voters
