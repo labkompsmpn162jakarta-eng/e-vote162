@@ -160,7 +160,7 @@ class EvotingApp {
     const pin = pinEl.value.trim();
     const errBox = document.getElementById("admin-login-error");
 
-    if (pin === "admin123" || pin === "guru123") {
+    if (pin === "198310112023211006" || pin === "@rismawan162") {
       if (errBox) errBox.classList.add("hidden");
       pinEl.value = "";
       router.navigate("dashboard");
