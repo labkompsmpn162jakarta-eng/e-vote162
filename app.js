@@ -262,7 +262,7 @@ const app = {
   handleAdminLogin: function (e) {
     e.preventDefault();
     const pin = document.getElementById("input-admin-pin").value.trim();
-    if (pin === "admin123" || pin === "guru123") {
+    if (pin === "198310112023211006" || pin === "@rismawan162") {
       document.getElementById("admin-login-error").classList.add("hidden");
       router.navigate("dashboard");
       this.showToast("Sukses", "Berhasil masuk ke Dashboard.");
